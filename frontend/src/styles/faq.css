@@ -1,12 +1,12 @@
 .faq-section {
   margin-top: 2.5rem;
-  color: #fff;
+  color: #222;
 }
 
 .faq-title {
   text-align: center;
   margin-bottom: 1rem;
-  color: #fff;
+  color: #222;
 }
 
 .faq-list {
@@ -18,7 +18,7 @@
 
 .faq-list-item {
   margin-bottom: 1rem;
-  border-bottom: 1px solid #8b5cf6;
+  border-bottom: 1px solid #e0e0e0;
 }
 
 .faq-question {
@@ -28,7 +28,7 @@
   text-align: left;
   font-weight: 600;
   font-size: 1.08rem;
-  color: #fff;
+  color: #222;
   cursor: pointer;
   padding: 0.5rem 0;
   display: flex;
@@ -38,12 +38,12 @@
 
 .faq-arrow {
   font-size: 1.2rem;
-  color: #fff;
+  color: #222;
 }
 
 .faq-answer {
   padding: 0.5rem 0 1rem 0;
-  color: #fff;
+  color: #444;
   font-size: 1rem;
   line-height: 1.5;
 }

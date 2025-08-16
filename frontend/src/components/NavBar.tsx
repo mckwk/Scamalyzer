@@ -1,7 +1,7 @@
 import React from 'react';
 import { useHistory } from 'react-router-dom';
 import ghIcon from '../images/gh.png';
-import scamalyzerIcon from '../images/logo.png';
+import scamalyzerIcon from '../images/logo-b.png';
 
 const NavBar: React.FC = () => {
   const history = useHistory();

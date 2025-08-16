@@ -10,7 +10,7 @@
 .education-tile {
   background: #fff;
   border-radius: 1rem;
-  box-shadow: 0 0.125rem 0.75rem rgba(139,92,246,0.07);
+  box-shadow: 0 0.125rem 0.75rem rgba(0,0,0,0.07);
   padding: 2rem 1.5rem;
   flex: 1 1 45%;
   min-width: 70%;
@@ -19,21 +19,23 @@
   transition: box-shadow 0.2s, transform 0.2s, flex 0.5s cubic-bezier(0.4,0,0.2,1), max-width 0.5s cubic-bezier(0.4,0,0.2,1);
   text-align: left;
   z-index: 1;
+  color: #222;
+  border: 1px solid #e0e0e0;
 }
 
 .education-tile:hover {
-  box-shadow: 0 0.5rem 1.5rem rgba(139,92,246,0.14);
+  box-shadow: 0 0.5rem 1.5rem rgba(0,0,0,0.14);
   transform: translateY(-4px) scale(1.02);
 }
 
 .education-tile h2 {
-  color: #fff;
+  color: #222;
   font-size: 1.5rem;
   margin-bottom: 1rem;
   text-align: center;
   font-weight: 600;
   letter-spacing: 0.0625rem;
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a78bfa 100%);
+  background: #f7f7f7;
   border-radius: 0.5rem;
   padding: 0.5rem 0;
   box-shadow: none;
@@ -51,7 +53,7 @@
 }
 
 .education-tile strong {
-  color: #6366f1;
+  color: #222;
 }
 
 .education-tile-content {
@@ -69,7 +71,7 @@
 
 .education-tile-toggle {
   width: 100%;
-  background: rgba(139,92,246,0.07);
+  background: #f7f7f7;
   border: none;
   border-radius: 0.75rem;
   padding: 0.75rem 0;
@@ -80,39 +82,40 @@
   align-items: center;
   justify-content: center;
   gap: 0.7rem;
+  color: #222;
 }
 
 .education-tile-toggle:focus {
-  outline: 2px solid #8b5cf6;
+  outline: 2px solid #222;
 }
 
 .education-tile-title {
   font-size: 1.5rem;
   font-weight: 600;
-  color: #8b5cf6;
+  color: #222;
 }
 
 .education-tile-arrow {
   font-size: 1.5rem;
-  color: #8b5cf6;
+  color: #222;
   transition: transform 0.2s;
 }
 
 .education-tile-toggle-label {
   font-size: 0.95rem;
-  color: #6366f1;
+  color: #888;
 }
 
 .education-tile.expanded {
   flex: 1 1 100%;
   max-width: 90%;
   z-index: 2;
-  box-shadow: 0 0.5rem 2rem rgba(139,92,246,0.18);
+  box-shadow: 0 0.5rem 2rem rgba(0,0,0,0.18);
   position: relative;
 }
 
 .education-tile.expanded .education-tile-toggle {
-  background: rgba(139,92,246,0.13);
+  background: #fff;
 }
 
 .education-tile.expanded .education-tile-content {
@@ -124,7 +127,7 @@
 .education-tile-subtitle {
   text-align: center;
   font-size: 1.08rem;
-  color: #6366f1;
+  color: #888;
   margin: 0.5rem 0 1rem 0;
   font-style: normal;
   font-weight: 500;
@@ -133,9 +136,9 @@
 
 .example {
   display: block;
-  background: #f3f4f6;
-  color: #6366f1;
-  border-left: 4px solid #8b5cf6;
+  background: #f7f7f7;
+  color: #222;
+  border-left: 4px solid #222;
   padding: 0.5rem 1rem;
   margin: 0.4rem 0 0.7rem 0;
   border-radius: 0.5rem;
