@@ -1,0 +1,9 @@
+Flask
+Flask-Cors
+Flask-RESTful
+transformers
+torch
+scikit-learn
+pandas
+numpy
+sqlalchemy
