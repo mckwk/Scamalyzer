@@ -71,39 +71,44 @@
 
 .education-tile-toggle {
   width: 100%;
-  background: #f7f7f7;
+  background: var(--accent-color);
   border: none;
   border-radius: 0.75rem;
   padding: 0.75rem 0;
   cursor: pointer;
   text-align: center;
-  transition: background 0.2s, border 0.2s;
+  transition: background 0.2s;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.7rem;
-  color: #222;
+  color: #fff;
 }
 
 .education-tile-toggle:focus {
-  outline: 2px solid #222;
+  outline: 2px solid var(--accent-color);
 }
 
 .education-tile-title {
   font-size: 1.5rem;
   font-weight: 600;
-  color: #222;
+  background: var(--accent-color);
+  color: #fff;
+  border-radius: 0.5rem;
+  padding: 0.5rem 0;
+  width: 100%;
+  display: block;
+  text-align: center;
+  box-sizing: border-box;
 }
 
 .education-tile-arrow {
   font-size: 1.5rem;
-  color: #222;
+  background: var(--accent-color);
+  color: #fff;
+  border-radius: 50%;
+  padding: 0.1rem 0.3rem;
   transition: transform 0.2s;
-}
-
-.education-tile-toggle-label {
-  font-size: 0.95rem;
-  color: #888;
 }
 
 .education-tile.expanded {
@@ -112,16 +117,6 @@
   z-index: 2;
   box-shadow: 0 0.5rem 2rem rgba(0,0,0,0.18);
   position: relative;
-}
-
-.education-tile.expanded .education-tile-toggle {
-  background: #fff;
-}
-
-.education-tile.expanded .education-tile-content {
-  max-height: 1000px;
-  opacity: 1;
-  transition: max-height 0.5s cubic-bezier(0.4,0,0.2,1), opacity 0.3s;
 }
 
 .education-tile-subtitle {
@@ -138,7 +133,7 @@
   display: block;
   background: #f7f7f7;
   color: #222;
-  border-left: 4px solid #222;
+  border-left: 4px solid var(--accent-color);
   padding: 0.5rem 1rem;
   margin: 0.4rem 0 0.7rem 0;
   border-radius: 0.5rem;
@@ -146,7 +141,6 @@
   font-style: normal;
 }
 
-/* Responsive styles */
 @media (max-width: 700px) {
   .education-tiles {
     flex-direction: column;
@@ -160,10 +154,13 @@
     max-width: 95vw;
     width: 95vw;
     padding: 1rem 0.5rem;
+    border-radius: 0.7rem;
   }
   .education-tile h2,
   .education-tile-title {
-    font-size: 1.15rem;
+    font-size: 1.05rem;
+    border-radius: 0.4rem;
+    padding: 0.3rem 0;
   }
   .education-tile-subtitle {
     font-size: 0.95rem;
@@ -176,5 +173,7 @@
   }
   .example {
     font-size: 0.9rem;
+    padding: 0.3rem 0.7rem;
+    border-radius: 0.4rem;
   }
 }

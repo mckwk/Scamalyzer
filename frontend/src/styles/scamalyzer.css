@@ -27,7 +27,7 @@
 }
 
 .analyze-btn {
-  background: #222;
+  background: var(--accent-color);
   color: #fff;
   border: none;
   border-radius: 0.7rem;
@@ -46,11 +46,6 @@
   background: #e0e0e0;
   color: #aaa;
   cursor: not-allowed;
-}
-
-.analyze-btn:hover:not(:disabled) {
-  background: #111;
-  color: #fff;
 }
 
 .examples-section {
@@ -76,9 +71,8 @@
 }
 
 .example-btn {
-  background: #fff;
-  color: #222;
-  border: 1px solid #222;
+  border: 1px solid var(--accent-color);
+  color: var(--accent-color);
   border-radius: 0.7rem;
   padding: 0.4rem 0.8rem;
   font-size: 0.98rem;
@@ -92,9 +86,9 @@
 
 .example-btn:hover,
 .example-btn:focus {
-  background: #222;
+  background: var(--accent-color);
   color: #fff;
-  border-color: #222;
+  border-color: var(--accent-color);
 }
 
 .result-box {
@@ -138,8 +132,10 @@
   width: 60%;
   margin: 0 0.5rem;
   vertical-align: middle;
-  accent-color: #222;
+  accent-color: var(--accent-color);
   background: #e0e0e0;
+  border-radius: 1rem;
+  overflow: hidden;   
 }
 
 .result-advice {
@@ -181,40 +177,66 @@
   .result-box {
     padding: 0.7rem;
     font-size: 1rem;
+    margin-top: 1rem;
+    border-radius: 0.7rem;
   }
   .analyze-textarea {
-    font-size: 0.95rem;
-    padding: 0.5rem;
-    min-height: 4rem;
+    font-size: 1.05rem;
+    padding: 0.7rem;
+    min-height: 7rem;
+    border-radius: 0.7rem;
+    border: 2px solid var(--accent-color);
+    background: #ffffff;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.10);
   }
   .analyze-btn {
     font-size: 1rem;
     padding: 0.6rem 0;
-    min-height: 44px;
-    min-width: 44px;
+    min-height: 40px;
+    min-width: 40px;
+    border-radius: 0.5rem;
   }
   .examples-section {
     margin-bottom: 1rem;
   }
   .examples-title {
     font-size: 1rem;
+    margin-bottom: 0.3rem;
   }
   .examples-list {
     gap: 0.3rem;
+    flex-direction: column;
+    align-items: stretch;
   }
   .example-btn {
     font-size: 0.95rem;
     padding: 0.3rem 0.6rem;
-    min-height: 44px;
-    min-width: 44px;
+    min-height: 40px;
+    min-width: 40px;
+    border-radius: 0.5rem;
+    width: 100%;
   }
   .result-label {
     font-size: 1.1rem;
+    margin-bottom: 0.3rem;
   }
   .result-icon {
     font-size: 2rem;
+    margin-bottom: 0.3rem;
   }
   .result-confidence progress {
     width: 100px;
+  }
+  .result-advice {
+    font-size: 0.98rem;
+    margin: 0.7rem 0;
+  }
+  .result-link {
+    font-size: 0.95rem;
+    margin-left: 0.1rem;
+  }
+  .result-disclaimer {
+    font-size: 0.85rem;
+    margin-top: 0.7rem;
   }
 }

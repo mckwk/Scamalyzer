@@ -1,0 +1,68 @@
+.recent-analyses-carousel {
+  margin-top: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.recent-analyses-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.recent-analyses-box {
+  padding: 0.7rem;
+  font-size: 0.93rem;
+  margin-bottom: 0;
+  box-shadow: 0 1px 8px rgba(0,0,0,0.04);
+  border-radius: 0.7rem;
+  text-align: left;
+  border-left-width: 4px;
+  max-width: 260px;
+  min-height: 64px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.recent-analyses-label {
+  font-weight: 500;
+  font-size: 1rem;
+  margin-bottom: 0.2rem;
+}
+
+.recent-analyses-message {
+  margin-bottom: 0.2rem;
+  color: #444;
+  font-size: 0.92rem;
+}
+
+.recent-analyses-confidence {
+  font-size: 0.9rem;
+}
+
+.recent-analyses-controls {
+  margin-top: 0.5rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.recent-analyses-controls-btn {
+  padding: 0.2rem 0.6rem;
+  font-size: 0.9rem;
+}
+
+.recent-analyses-controls-index {
+  font-size: 0.9rem;
+  color: #888;
+}
+
+@media (max-width: 700px) {
+  .recent-analyses-carousel {
+    display: none;
+  }
+}
+

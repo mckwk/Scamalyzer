@@ -1,21 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import '../styles/main.css';
 import '../styles/scamalyzer.css';
 import Header from '../components/Header';
 import FAQSection from '../components/FAQSection';
+import RecentAnalysesCarousel from '../components/RecentAnalysesCarousel';
+import { EXAMPLES as QUIZ_EXAMPLES, QuizExample } from '../constants/Examples';
 
 type ResultType = {
   label: string;
   confidence: number;
 };
 
-const EXAMPLES = [
-  "Your account will be closed in 24 hours unless you act now.",
-  "Congratulations! You have won a $1,000 gift card. Click here to claim.",
-  "Hi, can you send me your bank details for a refund?",
-  "Please buy gift cards and send me the codes.",
-  "This is the IRS. You owe money and must pay now.",
-];
+function getRandomScamExamples(): string[] {
+  const scamExamples = QUIZ_EXAMPLES.filter(ex => ex.isScam).map(ex => ex.text);
+  const shuffled = [...scamExamples].sort(() => Math.random() - 0.5);
+  return shuffled.slice(0, 5);
+}
+
+const EXAMPLES = getRandomScamExamples();
 
 const FAQS = [
   {
@@ -36,10 +38,27 @@ const FAQS = [
   }
 ];
 
+const RECENT_ANALYSES = [
+  { message: "Your account will be suspended unless you verify your info.", label: "scam", confidence: 0.97 },
+  { message: "Reminder: Your subscription renews tomorrow.", label: "safe", confidence: 0.92 },
+  { message: "Hi, can you send me your phone number?", label: "suspicious", confidence: 0.65 },
+  { message: "You've won a free iPhone! Click here.", label: "scam", confidence: 0.99 },
+  { message: "Your package is out for delivery.", label: "safe", confidence: 0.88 },
+];
+
 const ScamalyzerMain: React.FC = () => {
   const [message, setMessage] = useState('');
   const [result, setResult] = useState<ResultType | null>(null);
   const [loading, setLoading] = useState(false);
+  const [carouselIdx, setCarouselIdx] = useState(0);
+
+  // Auto-advance carousel every 4 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCarouselIdx(idx => (idx + 1) % RECENT_ANALYSES.length);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -160,8 +179,16 @@ const ScamalyzerMain: React.FC = () => {
             </div>
           </div>
         )}
+        {/* FAQ and Recent Analyses Carousel */}
+        <div style={{ display: 'flex', gap: '2rem', marginTop: '2.5rem', alignItems: 'flex-start' }}>
+          <div style={{ flex: 2 }}>
+            <FAQSection faqs={FAQS} />
+          </div>
+          <div style={{ flex: 1, minWidth: 220 }}>
+            <RecentAnalysesCarousel analyses={RECENT_ANALYSES} />
+          </div>
+        </div>
       </div>
-      <FAQSection faqs={FAQS} />
     </div>
   );
 };

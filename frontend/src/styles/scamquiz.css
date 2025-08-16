@@ -1,0 +1,169 @@
+.scamquiz-container {
+  max-width: 900px;
+  margin: 2rem auto;
+}
+
+.scamquiz-title {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.scamquiz-desc {
+  margin-bottom: 2rem;
+  color: #444;
+  font-size: 1.15rem;
+}
+
+.scamquiz-tile {
+  background: #f7f7f7;
+  border-radius: 0.7rem;
+  padding: 1.5rem;
+  border: 1px solid #e0e0e0;
+  margin-bottom: 1rem;
+  color: #222;
+  max-width: 800px;
+  margin: 0 auto;
+  font-size: 1.15rem;
+}
+
+.scamquiz-example {
+  margin-top: 0.7rem;
+  font-size: 1.18rem;
+}
+
+.scamquiz-btn-row {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 1.5rem;
+  justify-content: center;
+}
+
+.scamquiz-btn {
+  min-width: 120px;
+  font-size: 1.08rem;
+  padding: 0.8rem 2.2rem;
+}
+
+.scamquiz-answer {
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+  font-size: 1.08rem;
+}
+
+.scamquiz-next-btn {
+  margin-top: 0.7rem;
+  font-size: 1.15rem;
+  min-width: 160px;
+  padding: 0.7rem 2rem;
+}
+
+.scamquiz-score {
+  margin-top: 2rem;
+  font-weight: 600;
+  font-size: 1.12rem;
+}
+
+.scamquiz-final {
+  margin-top: 2rem;
+  text-align: center;
+}
+
+.scamquiz-final-title {
+  font-size: 1.5rem;
+}
+
+.scamquiz-final-list {
+  text-align: left;
+  margin: 2rem auto;
+  max-width: 800px;
+  font-size: 1.08rem;
+}
+
+.scamquiz-final-item {
+  margin-bottom: 1.2rem;
+  list-style: decimal;
+}
+
+.scamquiz-playagain-btn {
+  margin-top: 1.5rem;
+  font-size: 1.08rem;
+  min-width: 160px;
+  padding: 0.7rem 2rem;
+}
+
+@media (max-width: 700px) {
+  .scamquiz-container {
+    max-width: 95vw;
+    margin: 1rem 0.5rem;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+  }
+
+  .scamquiz-title {
+    font-size: 1.3rem;
+    margin-bottom: 0.7rem;
+  }
+
+  .scamquiz-desc {
+    font-size: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .scamquiz-tile {
+    padding: 1rem;
+    font-size: 1rem;
+    max-width: 100vw;
+    margin: 0;
+  }
+
+  .scamquiz-example {
+    font-size: 1.05rem;
+    margin-top: 0.5rem;
+  }
+
+  .scamquiz-btn-row {
+    gap: 1rem;
+    margin-bottom: 1rem;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .scamquiz-btn,
+  .scamquiz-next-btn,
+  .scamquiz-playagain-btn {
+    min-width: unset;
+    width: 100%;
+    font-size: 1rem;
+    padding: 0.7rem 0.5rem;
+  }
+
+  .scamquiz-answer {
+    font-size: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .scamquiz-score {
+    font-size: 1rem;
+    margin-top: 1rem;
+  }
+
+  .scamquiz-final {
+    margin-top: 1rem;
+    padding: 0.5rem;
+  }
+
+  .scamquiz-final-title {
+    font-size: 1.1rem;
+  }
+
+  .scamquiz-final-list {
+    font-size: 1rem;
+    margin: 1rem 0;
+    max-width: 100vw;
+    padding-left: 1rem;
+  }
+
+  .scamquiz-final-item {
+    margin-bottom: 0.8rem;
+  }
+}

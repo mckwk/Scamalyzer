@@ -1,7 +1,7 @@
 import React from 'react';
 import { useHistory } from 'react-router-dom';
 import ghIcon from '../images/gh.png';
-import scamalyzerIcon from '../images/logo-b.png';
+import scamalyzerIcon from '../images/logo-c.png';
 
 const NavBar: React.FC = () => {
   const history = useHistory();
@@ -24,16 +24,16 @@ const NavBar: React.FC = () => {
           <button
             className="nav-btn-pro nav-btn-transparent"
             type="button"
-            onClick={() => history.push('/')}
+            onClick={() => history.push('/education')}
           >
-            Home
+            How to stay safe?
           </button>
           <button
             className="nav-btn-pro nav-btn-transparent"
             type="button"
-            onClick={() => history.push('/education')}
+            onClick={() => history.push('/quiz')}
           >
-            How to stay safe?
+            Quiz: Can you spot the scam?
           </button>
           <a
             href="https://github.com/mckwk/scamalyzer"

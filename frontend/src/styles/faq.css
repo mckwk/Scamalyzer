@@ -7,6 +7,8 @@
   text-align: center;
   margin-bottom: 1rem;
   color: #222;
+  font-size: 1.25rem;
+  font-weight: 700;
 }
 
 .faq-list {
@@ -24,11 +26,11 @@
 .faq-question {
   background: none;
   border: none;
-  width: 100%;
+  width: 90vw;
   text-align: left;
   font-weight: 600;
   font-size: 1.08rem;
-  color: #222;
+  color: var(--accent-color);
   cursor: pointer;
   padding: 0.5rem 0;
   display: flex;
@@ -38,7 +40,7 @@
 
 .faq-arrow {
   font-size: 1.2rem;
-  color: #222;
+  color: var(--accent-color);
 }
 
 .faq-answer {
@@ -49,12 +51,30 @@
 }
 
 @media (max-width: 700px) {
+  .faq-section {
+    margin-top: 1.2rem;
+  }
+  .faq-title {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+  }
   .faq-list {
     max-width: 95vw;
     width: 95vw;
     margin: 0 auto;
   }
-  .faq-answer {
+  .faq-list-item {
+    margin-bottom: 0.7rem;
+  }
+  .faq-question {
     font-size: 0.95rem;
+    padding: 0.3rem 0;
+  }
+  .faq-arrow {
+    font-size: 1rem;
+  }
+  .faq-answer {
+    font-size: 0.90rem;
+    padding: 0.3rem 0.7rem 0.7rem 0;
   }
 }
