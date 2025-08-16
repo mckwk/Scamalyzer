@@ -1,6 +1,6 @@
 # Scamalyzer
 
-The Scamalyzer project is designed to analyze text messages (such as SMS and emails) for signs of deception and fraud. This application utilizes advanced machine learning techniques, specifically BERT-based models, to classify messages as safe, suspicious, or fraudulent.
+The Scamalyzer project is designed to analyze text messages (such as SMS and emails) for signs of deception and fraud. This application utilizes advanced machine learning techniques, specifically BERT-based models, to classify messages as safe or fraudulent.
 
 ## Project Structure
 
