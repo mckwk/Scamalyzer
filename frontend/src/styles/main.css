@@ -9,7 +9,7 @@ html, body {
 }
 
 body, html, .main-bg {
-  font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;
+  font-family: 'Poppins', sans-serif;
   background: linear-gradient(90deg, #f8fafd 0%, #eaf6ff 100%);
 }
 

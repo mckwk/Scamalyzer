@@ -4,7 +4,7 @@ import '../styles/scamalyzer.css';
 import Header from '../components/Header';
 import FAQSection from '../components/FAQSection';
 import RecentAnalysesCarousel from '../components/RecentAnalysesCarousel';
-import { EXAMPLES as QUIZ_EXAMPLES, QuizExample } from '../constants/Examples';
+import { EXAMPLES as QUIZ_EXAMPLES } from '../constants/Examples';
 
 type ResultType = {
   label: string;
@@ -52,7 +52,6 @@ const ScamalyzerMain: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [carouselIdx, setCarouselIdx] = useState(0);
 
-  // Auto-advance carousel every 4 seconds
   useEffect(() => {
     const interval = setInterval(() => {
       setCarouselIdx(idx => (idx + 1) % RECENT_ANALYSES.length);
