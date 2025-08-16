@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import '../styles/carousel.css';
+import { EXAMPLES } from '../constants/Examples';
 
 type Analysis = {
   message: string;
@@ -7,20 +8,26 @@ type Analysis = {
   confidence: number;
 };
 
-interface RecentAnalysesCarouselProps {
-  analyses: Analysis[];
+function getRandomAnalyses(): Analysis[] {
+  const shuffled = [...EXAMPLES].sort(() => Math.random() - 0.5);
+  return shuffled.slice(0, 5).map(ex => ({
+    message: ex.text,
+    label: ex.isScam ? 'scam' : 'safe',
+    confidence: ex.confidence ?? 0.95,
+  }));
 }
 
-const RecentAnalysesCarousel: React.FC<RecentAnalysesCarouselProps> = ({ analyses }) => {
+const analyses = getRandomAnalyses();
+
+const RecentAnalysesCarousel: React.FC = () => {
   const [carouselIdx, setCarouselIdx] = useState(0);
 
-  // Auto-advance carousel every 4 seconds
   useEffect(() => {
     const interval = setInterval(() => {
       setCarouselIdx(idx => (idx + 1) % analyses.length);
-    }, 4000);
+    }, 8000);
     return () => clearInterval(interval);
-  }, [analyses.length]);
+  }, []);
 
   return (
     <div className="recent-analyses-carousel">

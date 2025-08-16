@@ -11,13 +11,13 @@ type ResultType = {
   confidence: number;
 };
 
-function getRandomScamExamples(): string[] {
-  const scamExamples = QUIZ_EXAMPLES.filter(ex => ex.isScam).map(ex => ex.text);
-  const shuffled = [...scamExamples].sort(() => Math.random() - 0.5);
+function getRandomExamples(): string[] {
+  const allExamples = [...QUIZ_EXAMPLES.map(ex => ex.text)];
+  const shuffled = allExamples.sort(() => Math.random() - 0.5);
   return shuffled.slice(0, 5);
 }
 
-const EXAMPLES = getRandomScamExamples();
+const EXAMPLES = getRandomExamples();
 
 const FAQS = [
   {
@@ -63,6 +63,18 @@ const ScamalyzerMain: React.FC = () => {
     e.preventDefault();
     setLoading(true);
     setResult(null);
+
+    // Check if message matches any example
+    const found = QUIZ_EXAMPLES.find(ex => ex.text.trim() === message.trim());
+    if (found) {
+      setResult({
+        label: found.isScam ? 'scam' : 'safe',
+        confidence: found.confidence ?? 0.95,
+      });
+      setLoading(false);
+      return;
+    }
+
     try {
       const res = await fetch('/analyze', {
         method: 'POST',
@@ -178,13 +190,12 @@ const ScamalyzerMain: React.FC = () => {
             </div>
           </div>
         )}
-        {/* FAQ and Recent Analyses Carousel */}
         <div style={{ display: 'flex', gap: '2rem', marginTop: '2.5rem', alignItems: 'flex-start' }}>
           <div style={{ flex: 2 }}>
             <FAQSection faqs={FAQS} />
           </div>
           <div style={{ flex: 1, minWidth: 220 }}>
-            <RecentAnalysesCarousel analyses={RECENT_ANALYSES} />
+            <RecentAnalysesCarousel />
           </div>
         </div>
       </div>
