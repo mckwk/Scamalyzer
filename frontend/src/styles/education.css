@@ -1,0 +1,177 @@
+.education-tiles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.2rem;
+  justify-content: center;
+  margin-top: 2.5rem;
+  align-items: flex-end;
+}
+
+.education-tile {
+  background: #fff;
+  border-radius: 1rem;
+  box-shadow: 0 0.125rem 0.75rem rgba(139,92,246,0.07);
+  padding: 2rem 1.5rem;
+  flex: 1 1 45%;
+  min-width: 70%;
+  max-width: 90%;
+  margin-bottom: 1rem;
+  transition: box-shadow 0.2s, transform 0.2s, flex 0.5s cubic-bezier(0.4,0,0.2,1), max-width 0.5s cubic-bezier(0.4,0,0.2,1);
+  text-align: left;
+  z-index: 1;
+}
+
+.education-tile:hover {
+  box-shadow: 0 0.5rem 1.5rem rgba(139,92,246,0.14);
+  transform: translateY(-4px) scale(1.02);
+}
+
+.education-tile h2 {
+  color: #fff;
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  text-align: center;
+  font-weight: 600;
+  letter-spacing: 0.0625rem;
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a78bfa 100%);
+  border-radius: 0.5rem;
+  padding: 0.5rem 0;
+  box-shadow: none;
+}
+
+.education-tile ul {
+  padding-left: 1.2rem;
+  margin: 0;
+}
+
+.education-tile li {
+  margin-bottom: 0.7rem;
+  font-size: 1.07rem;
+  color: #444;
+}
+
+.education-tile strong {
+  color: #6366f1;
+}
+
+.education-tile-content {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 0.4s cubic-bezier(0.4,0,0.2,1), opacity 0.3s;
+}
+
+.education-tile-content.show {
+  max-height: 1000px;
+  opacity: 1;
+  transition: max-height 0.5s cubic-bezier(0.4,0,0.2,1), opacity 0.3s;
+}
+
+.education-tile-toggle {
+  width: 100%;
+  background: rgba(139,92,246,0.07);
+  border: none;
+  border-radius: 0.75rem;
+  padding: 0.75rem 0;
+  cursor: pointer;
+  text-align: center;
+  transition: background 0.2s, border 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.7rem;
+}
+
+.education-tile-toggle:focus {
+  outline: 2px solid #8b5cf6;
+}
+
+.education-tile-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #8b5cf6;
+}
+
+.education-tile-arrow {
+  font-size: 1.5rem;
+  color: #8b5cf6;
+  transition: transform 0.2s;
+}
+
+.education-tile-toggle-label {
+  font-size: 0.95rem;
+  color: #6366f1;
+}
+
+.education-tile.expanded {
+  flex: 1 1 100%;
+  max-width: 90%;
+  z-index: 2;
+  box-shadow: 0 0.5rem 2rem rgba(139,92,246,0.18);
+  position: relative;
+}
+
+.education-tile.expanded .education-tile-toggle {
+  background: rgba(139,92,246,0.13);
+}
+
+.education-tile.expanded .education-tile-content {
+  max-height: 1000px;
+  opacity: 1;
+  transition: max-height 0.5s cubic-bezier(0.4,0,0.2,1), opacity 0.3s;
+}
+
+.education-tile-subtitle {
+  text-align: center;
+  font-size: 1.08rem;
+  color: #6366f1;
+  margin: 0.5rem 0 1rem 0;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+.example {
+  display: block;
+  background: #f3f4f6;
+  color: #6366f1;
+  border-left: 4px solid #8b5cf6;
+  padding: 0.5rem 1rem;
+  margin: 0.4rem 0 0.7rem 0;
+  border-radius: 0.5rem;
+  font-size: 0.98rem;
+  font-style: normal;
+}
+
+/* Responsive styles */
+@media (max-width: 700px) {
+  .education-tiles {
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 1rem;
+    align-items: stretch;
+  }
+  .education-tile,
+  .education-tile.expanded {
+    min-width: 0;
+    max-width: 95vw;
+    width: 95vw;
+    padding: 1rem 0.5rem;
+  }
+  .education-tile h2,
+  .education-tile-title {
+    font-size: 1.15rem;
+  }
+  .education-tile-subtitle {
+    font-size: 0.95rem;
+  }
+  .education-tile li {
+    font-size: 0.95rem;
+  }
+  .education-tile-toggle-label {
+    font-size: 0.9rem;
+  }
+  .example {
+    font-size: 0.9rem;
+  }
+}
