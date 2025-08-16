@@ -96,7 +96,7 @@ const ScamQuiz: React.FC = () => {
             disabled={!showAnswer}
             onClick={handleNext}
           >
-            {answers.length === 4 ? "Finish Quiz" : "Next"}
+            {current === 4 ? "Finish Quiz" : "Next"}
           </button>
           <div className="scamquiz-score">
             Score: {score} / {answers.length}
