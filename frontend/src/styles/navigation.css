@@ -90,8 +90,18 @@
 }
 
 @media (max-width: 700px) {
+  .nav-bar-pro.nav-bar-transparent {
+    width: 100vw;
+    max-width: 100vw;
+    left: 0;
+    right: 0;
+  }
   .nav-content.nav-content-space {
-    padding: 0.3rem 0.2rem;
+    width: 100vw;
+    max-width: 100vw;
+    padding: 0.3rem 0.5rem;
+    margin: 0;
+    box-sizing: border-box;
     flex-direction: column;
     align-items: center;
     justify-content: center;
