@@ -1,8 +1,4 @@
-* {
-  font-family: 'Poppins', sans-serif !important;
-}
-
-.nav-bar-pro.nav-bar-transparent {
+.nav-bar {
   width: 100%;
   background: #fff;
   box-shadow: 0 2px 12px rgba(0,0,0,0.04);
@@ -30,6 +26,13 @@
   border: none;
   cursor: pointer;
   padding: 0;
+}
+
+.nav-logo-img {
+  height: 64px;
+  width: 250px;
+  vertical-align: middle;
+  margin-right: 10px;
 }
 
 .nav-title.nav-title-white {
