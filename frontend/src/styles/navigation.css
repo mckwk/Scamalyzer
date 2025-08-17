@@ -1,8 +1,4 @@
-* {
-  font-family: 'Poppins', sans-serif !important;
-}
-
-.nav-bar-pro.nav-bar-transparent {
+.nav-bar {
   width: 100%;
   background: #fff;
   box-shadow: 0 2px 12px rgba(0,0,0,0.04);
@@ -30,6 +26,13 @@
   border: none;
   cursor: pointer;
   padding: 0;
+}
+
+.nav-logo-img {
+  height: 64px;
+  width: 250px;
+  vertical-align: middle;
+  margin-right: 10px;
 }
 
 .nav-title.nav-title-white {
@@ -90,8 +93,18 @@
 }
 
 @media (max-width: 700px) {
+  .nav-bar-pro.nav-bar-transparent {
+    width: 100vw;
+    max-width: 100vw;
+    left: 0;
+    right: 0;
+  }
   .nav-content.nav-content-space {
-    padding: 0.3rem 0.2rem;
+    width: 100vw;
+    max-width: 100vw;
+    padding: 0.3rem 0.5rem;
+    margin: 0;
+    box-sizing: border-box;
     flex-direction: column;
     align-items: center;
     justify-content: center;
