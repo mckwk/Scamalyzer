@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Scamalyzer</string>
+    <string name="title_activity_main">Scamalyzer</string>
+    <string name="package_name">com.mckwk.scamalyzer</string>
+    <string name="custom_url_scheme">com.mckwk.scamalyzer</string>
+</resources>
