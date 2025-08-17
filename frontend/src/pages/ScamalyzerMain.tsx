@@ -51,6 +51,8 @@ const ScamalyzerMain: React.FC = () => {
   const [result, setResult] = useState<ResultType | null>(null);
   const [loading, setLoading] = useState(false);
   const [carouselIdx, setCarouselIdx] = useState(0);
+  const [showResult, setShowResult] = useState(false);
+  const [animatedConfidence, setAnimatedConfidence] = useState(0);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -58,6 +60,33 @@ const ScamalyzerMain: React.FC = () => {
     }, 4000);
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    if (result) {
+      setShowResult(false);
+      setAnimatedConfidence(0);
+      // Delay to trigger animation
+      setTimeout(() => {
+        setShowResult(true);
+        // Animate confidence value
+        let start = 0;
+        const end = result.confidence;
+        const duration = 700;
+        const step = 16;
+        let startTime: number | null = null;
+
+        function animateConfidence(ts: number) {
+          if (!startTime) startTime = ts;
+          const progress = Math.min((ts - startTime) / duration, 1);
+          setAnimatedConfidence(start + (end - start) * progress);
+          if (progress < 1) {
+            requestAnimationFrame(animateConfidence);
+          }
+        }
+        requestAnimationFrame(animateConfidence);
+      }, 80);
+    }
+  }, [result]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -177,12 +206,20 @@ const ScamalyzerMain: React.FC = () => {
           </button>
         </form>
         {result && (
-          <div className={`result-box ${result.label}`}>
+          <div
+            className={`result-box ${result.label} ${showResult ? 'result-box-animate' : ''}`}
+          >
             <span className={`result-label ${result.label}`}>
               {result.label.toUpperCase()}
             </span>
             <div className="result-confidence">
-              Confidence: <progress value={result.confidence} max={1} /> {(result.confidence * 100).toFixed(1)}%
+              Confidence:
+              <progress
+                value={animatedConfidence}
+                max={1}
+                className="animated-progress"
+              />
+              {(animatedConfidence * 100).toFixed(1)}%
             </div>
             {getAdvice(result.label)}
             <div className="result-disclaimer">

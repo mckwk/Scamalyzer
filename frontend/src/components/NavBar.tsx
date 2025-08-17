@@ -14,11 +14,7 @@ const NavBar: React.FC = () => {
           type="button"
           aria-label="Go to home"
         >
-          <img
-            src={scamalyzerIcon}
-            alt="Scamalyzer Icon"
-            style={{ height: '64px', width: '250px', verticalAlign: 'middle', marginRight: '10px' }}
-          />
+          <img src={scamalyzerIcon} alt="Scamalyzer Icon" className="nav-logo-img" />
         </button>
         <div className="nav-links nav-links-right">
           <button

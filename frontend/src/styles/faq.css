@@ -1,7 +1,3 @@
-* {
-  font-family: 'Poppins', sans-serif !important;
-}
-
 .faq-section {
   margin-top: 2.5rem;
   color: #222;
@@ -30,7 +26,8 @@
 .faq-question {
   background: none;
   border: none;
-  width: 90vw;
+  width: 100%;
+  max-width: 600px;
   text-align: left;
   font-weight: 600;
   font-size: 1.08rem;
@@ -40,11 +37,12 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  box-sizing: border-box;
 }
 
 .faq-arrow {
   font-size: 1.2rem;
-  color: var(--accent-color);
+  color: black;
 }
 
 .faq-answer {
@@ -73,6 +71,8 @@
   .faq-question {
     font-size: 0.95rem;
     padding: 0.3rem 0;
+    max-width: 95vw;
+    width: 100%;
   }
   .faq-arrow {
     font-size: 1rem;
