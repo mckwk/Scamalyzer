@@ -1,6 +1,5 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
-import { SpeedInsights } from "@vercel/speed-insights/react"
 import ScamalyzerMain from './pages/ScamalyzerMain';
 import EducationPage from './pages/EducationPage';
 import ScamQuiz from './pages/ScamQuiz';
@@ -21,7 +20,6 @@ const App: React.FC = () => {
         </Switch>
         <Footer />
       </div>
-      <SpeedInsights />
     </Router>
   );
 };
