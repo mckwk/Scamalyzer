@@ -6,8 +6,8 @@ import string
 # -----------------------------
 # Configuration
 # -----------------------------
-DATA_FOLDER = "D:\\Repos\\datasets"
-OUTPUT_FOLDER = "D:\\Repos\\datasets\\normalized"
+DATA_FOLDER = ""
+OUTPUT_FOLDER = ""
 MAX_MESSAGE_LENGTH = 20000
 MIN_MESSAGE_LENGTH = 10
 
@@ -75,10 +75,6 @@ def report_distribution(df):
     total = scam_count + non_scam_count
     scam_pct = (scam_count / total) * 100 if total else 0
     non_scam_pct = (non_scam_count / total) * 100 if total else 0
-    print(f"\n  Scam count: {scam_count}")
-    print(f"  Non-scam count: {non_scam_count}")
-    print(f"  Scam percentage: {scam_pct:.2f}%")
-    print(f"  Non-scam percentage: {non_scam_pct:.2f}%")
     return scam_count, non_scam_count, scam_pct, non_scam_pct
 
 def save_csv(df, path):
@@ -150,16 +146,20 @@ def merge_and_deduplicate(output_folder, merged_filename="merged/merged.csv"):
     merged_df = pd.concat(dfs, ignore_index=True)
 
     before = len(merged_df)
+    print(f"\n  Merged rows: {before}")
+
     merged_df = filter_messages(merged_df)
     merged_df = merged_df.drop_duplicates(subset=["message", "label"])
     after = len(merged_df)
+    print(f"  Rows after deduplication and filtering: {after}")
 
     # Randomize order
     merged_df = merged_df.sample(frac=1, random_state=42).reset_index(drop=True)
 
-    report_distribution(merged_df)
-    print(f"\n  Merged rows: {before}")
-    print(f"  Rows after deduplication and filtering: {after}")
+    scam_count, non_scam_count, scam_pct, non_scam_pct = report_distribution(merged_df)
+    # Optionally, print a summary line
+    print(f"\n  Final distribution: {scam_count} scam, {non_scam_count} non-scam")
+    print(f"  Scam percentage: {scam_pct:.2f}%, Non-scam percentage: {non_scam_pct:.2f}%")
 
     merged_path = os.path.join(output_folder, merged_filename)
     save_csv(merged_df, merged_path)
