@@ -1,5 +1,7 @@
-from sklearn.feature_extraction.text import CountVectorizer
 import re
+
+from sklearn.feature_extraction.text import CountVectorizer
+
 
 def clean_text(text):
     text = text.lower()  # Convert to lowercase
@@ -8,10 +10,12 @@ def clean_text(text):
     text = text.strip()  # Remove leading and trailing whitespace
     return text
 
+
 def tokenize_text(text):
     vectorizer = CountVectorizer()
     tokens = vectorizer.fit_transform([text])
     return vectorizer.get_feature_names_out()
+
 
 def preprocess_message(message):
     cleaned_message = clean_text(message)

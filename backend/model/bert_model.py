@@ -1,13 +1,16 @@
-from transformers import BertTokenizer, BertForSequenceClassification
 import torch
+from transformers import BertForSequenceClassification, BertTokenizer
+
 
 class BERTModel:
     def __init__(self, model_name='bert-base-uncased', num_labels=3):
         self.tokenizer = BertTokenizer.from_pretrained(model_name)
-        self.model = BertForSequenceClassification.from_pretrained(model_name, num_labels=num_labels)
+        self.model = BertForSequenceClassification.from_pretrained(
+            model_name, num_labels=num_labels)
 
     def preprocess(self, text):
-        inputs = self.tokenizer(text, return_tensors='pt', padding=True, truncation=True, max_length=512)
+        inputs = self.tokenizer(text, return_tensors='pt',
+                                padding=True, truncation=True, max_length=512)
         return inputs
 
     def predict(self, text):
@@ -24,8 +27,10 @@ class BERTModel:
     def load_model(self, model_path):
         self.model = BertForSequenceClassification.from_pretrained(model_path)
 
+
 # Create a global model instance (so it's loaded only once)
 bert_model_instance = BERTModel()
+
 
 def analyze_message(text):
     label, confidence = bert_model_instance.predict(text)

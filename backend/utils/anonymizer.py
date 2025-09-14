@@ -2,6 +2,7 @@ import pandas as pd
 from presidio_analyzer import AnalyzerEngine
 from presidio_anonymizer import AnonymizerEngine
 from tqdm import tqdm
+
 from backend.utils.config import MERGED_PATH, OUTPUT_FOLDER
 
 print("Loading dataset...")

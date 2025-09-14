@@ -1,7 +1,9 @@
-import os
-import pandas as pd
 import glob
+import os
 import string
+
+import pandas as pd
+
 from backend.utils.config import DATA_FOLDER_MESSAGES, OUTPUT_FOLDER
 
 # -----------------------------
@@ -27,6 +29,8 @@ LABEL_MAPPING = {
 # -----------------------------
 # Helper functions
 # -----------------------------
+
+
 def find_column(columns, candidates):
     columns_lower = [c.lower().strip() for c in columns]
     for candidate in candidates:
@@ -35,6 +39,7 @@ def find_column(columns, candidates):
             if col.startswith(candidate):
                 return columns[idx]
     return None
+
 
 def normalize_label(value):
     """Normalize labels to 0 or 1 as integers, including float values like 0.0/1.0."""
@@ -52,21 +57,24 @@ def normalize_label(value):
         return int(mapped)
     return None
 
+
 def clean_text(text):
     """Basic text cleaning: remove punctuation, lowercase, strip extra spaces."""
     if pd.isnull(text):
         return ""
     text = str(text).strip().lower()
-    text = text.replace('\t', ' ') 
-    text = text.replace('"', '') 
+    text = text.replace('\t', ' ')
+    text = text.replace('"', '')
     text = text.translate(str.maketrans('', '', string.punctuation))
     return " ".join(text.split())
+
 
 def filter_messages(df, min_len=MIN_MESSAGE_LENGTH, max_len=MAX_MESSAGE_LENGTH):
     df = df.dropna(subset=["message", "label"])
     df = df[df["message"].str.strip().str.len() >= min_len]
     df = df[df["message"].str.len() <= max_len]
     return df
+
 
 def report_distribution(df):
     scam_count = (df["label"] == 1).sum()
@@ -76,6 +84,7 @@ def report_distribution(df):
     non_scam_pct = (non_scam_count / total) * 100 if total else 0
     return scam_count, non_scam_count, scam_pct, non_scam_pct
 
+
 def save_csv(df, path):
     df.to_csv(path, index=False)
     print(f"  [OK] Saved file to: {path}")
@@ -83,6 +92,8 @@ def save_csv(df, path):
 # -----------------------------
 # Main processing
 # -----------------------------
+
+
 def normalize_datasets(data_folder, output_folder):
     os.makedirs(output_folder, exist_ok=True)
     all_files = glob.glob(os.path.join(data_folder, "*.csv"))
@@ -96,14 +107,16 @@ def normalize_datasets(data_folder, output_folder):
     for file in all_files:
         print(f"\n--- Normalizing: {os.path.basename(file)} ---")
         try:
-            df = pd.read_csv(file, sep=",", encoding='utf-8-sig', on_bad_lines='skip')
+            df = pd.read_csv(
+                file, sep=",", encoding='utf-8-sig', on_bad_lines='skip')
         except Exception as e:
             print(f"  [ERROR] Could not read file: {e}")
             continue
 
         df.columns = [c.strip() for c in df.columns]
         df = df.loc[:, ~df.columns.str.contains('^Unnamed')]
-        df = df.loc[:, [c for c in df.columns if c and any(ch.isalnum() for ch in c)]]
+        df = df.loc[:, [c for c in df.columns if c and any(
+            ch.isalnum() for ch in c)]]
         df.columns = [c.strip().lower() for c in df.columns]
 
         print(f"  Columns found: {df.columns.tolist()}")
@@ -115,7 +128,8 @@ def normalize_datasets(data_folder, output_folder):
             print("  [WARNING] Required columns not found. Skipping file.")
             continue
 
-        print(f"  Using text column: '{text_col}', label column: '{label_col}'")
+        print(
+            f"  Using text column: '{text_col}', label column: '{label_col}'")
         print(f"  Unique label values (raw): {df[label_col].unique()}")
 
         df = df[[text_col, label_col]].copy()
@@ -127,19 +141,22 @@ def normalize_datasets(data_folder, output_folder):
         print(f"  Rows before dropna: {len(df)}")
         df = filter_messages(df)
         print(f"  Rows after filtering: {len(df)}")
-        print(f"  Unique label values (normalized): {list(df['label'].dropna().unique())}")
+        print(
+            f"  Unique label values (normalized): {list(df['label'].dropna().unique())}")
 
         output_file = os.path.join(output_folder, os.path.basename(file))
         save_csv(df, output_file)
 
     print("\n========== Normalization Complete ==========\n")
 
+
 def merge_and_deduplicate(output_folder, merged_filename="merged/merged.csv"):
     print("\n========== Merging and Deduplicating ==========\n")
     csv_files = glob.glob(os.path.join(output_folder, "*.csv"))
     dfs = []
     for file in csv_files:
-        print(f"  Adding {os.path.basename(file)} ({os.path.getsize(file)//1024} KB)")
+        print(
+            f"  Adding {os.path.basename(file)} ({os.path.getsize(file)//1024} KB)")
         df = pd.read_csv(file)
         dfs.append(df)
     merged_df = pd.concat(dfs, ignore_index=True)
@@ -153,16 +170,21 @@ def merge_and_deduplicate(output_folder, merged_filename="merged/merged.csv"):
     print(f"  Rows after deduplication and filtering: {after}")
 
     # Randomize order
-    merged_df = merged_df.sample(frac=1, random_state=42).reset_index(drop=True)
+    merged_df = merged_df.sample(
+        frac=1, random_state=42).reset_index(drop=True)
 
-    scam_count, non_scam_count, scam_pct, non_scam_pct = report_distribution(merged_df)
+    scam_count, non_scam_count, scam_pct, non_scam_pct = report_distribution(
+        merged_df)
     # Optionally, print a summary line
-    print(f"\n  Final distribution: {scam_count} scam, {non_scam_count} non-scam")
-    print(f"  Scam percentage: {scam_pct:.2f}%, Non-scam percentage: {non_scam_pct:.2f}%")
+    print(
+        f"\n  Final distribution: {scam_count} scam, {non_scam_count} non-scam")
+    print(
+        f"  Scam percentage: {scam_pct:.2f}%, Non-scam percentage: {non_scam_pct:.2f}%")
 
     merged_path = os.path.join(output_folder, merged_filename)
     save_csv(merged_df, merged_path)
     print("========== Merge Complete ==========\n")
+
 
 # -----------------------------
 # Run the script
