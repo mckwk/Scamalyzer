@@ -14,7 +14,7 @@ MIN_MESSAGE_LENGTH = 10
 
 TEXT_COLUMNS = [
     'text', 'message', 'content', 'body', 'email', 'email text',
-    'text_combined', 'msg_content', 'url'
+    'text_combined', 'msg_content'
 ]
 LABEL_COLUMNS = [
     'label', 'class', 'spam', 'is_scam', 'is_spam', 'email type', 'type'
