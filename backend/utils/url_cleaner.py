@@ -1,26 +1,24 @@
 import os
 import pandas as pd
 import glob
-import string
-from backend.utils.config import DATA_FOLDER_MESSAGES, OUTPUT_FOLDER
+from backend.utils.config import DATA_FOLDER_URLS, OUTPUT_FOLDER
 
 # -----------------------------
 # Configuration
 # -----------------------------
-MAX_MESSAGE_LENGTH = 20000
-MIN_MESSAGE_LENGTH = 10
+MAX_URL_LENGTH = 2000
+MIN_URL_LENGTH = 5
 
-TEXT_COLUMNS = [
-    'text', 'message', 'content', 'body', 'email', 'email text',
-    'text_combined', 'msg_content', 'url'
+URL_COLUMNS = [
+    'url', 'link', 'website', 'domain', 'address'
 ]
 LABEL_COLUMNS = [
     'label', 'class', 'spam', 'is_scam', 'is_spam', 'email type', 'type'
 ]
 
 LABEL_MAPPING = {
-    'spam': 1, 'scam': 1, 'fraud': 1, 'phishing': 1, 'unsafe': 1,
-    'ham': 0, 'legit': 0, 'safe email': 0, 'not spam': 0,
+    'spam': 1, 'scam': 1, 'fraud': 1, 'phishing': 1, 'unsafe': 1, 'malicious': 1,
+    'ham': 0, 'legit': 0, 'benign': 0, 'safe': 0, 'not spam': 0,
     '0': 0, '1': 1, 0: 0, 1: 1
 }
 
@@ -37,7 +35,7 @@ def find_column(columns, candidates):
     return None
 
 def normalize_label(value):
-    """Normalize labels to 0 or 1 as integers, including float values like 0.0/1.0."""
+    """Normalize labels to 0 or 1 as integers."""
     if pd.isnull(value):
         return None
     try:
@@ -52,19 +50,15 @@ def normalize_label(value):
         return int(mapped)
     return None
 
-def clean_text(text):
-    """Basic text cleaning: remove punctuation, lowercase, strip extra spaces."""
-    if pd.isnull(text):
+def clean_url(url):
+    """Keep URL structure intact, only strip spaces and lowercase."""
+    if pd.isnull(url):
         return ""
-    text = str(text).strip().lower()
-    text = text.replace('\t', ' ') 
-    text = text.replace('"', '') 
-    text = text.translate(str.maketrans('', '', string.punctuation))
-    return " ".join(text.split())
+    return str(url).strip().lower()
 
-def filter_messages(df, min_len=MIN_MESSAGE_LENGTH, max_len=MAX_MESSAGE_LENGTH):
+def filter_urls(df, min_len=MIN_URL_LENGTH, max_len=MAX_URL_LENGTH):
     df = df.dropna(subset=["message", "label"])
-    df = df[df["message"].str.strip().str.len() >= min_len]
+    df = df[df["message"].str.len() >= min_len]
     df = df[df["message"].str.len() <= max_len]
     return df
 
@@ -83,15 +77,13 @@ def save_csv(df, path):
 # -----------------------------
 # Main processing
 # -----------------------------
-def normalize_datasets(data_folder, output_folder):
+def normalize_url_datasets(data_folder, output_folder):
     os.makedirs(output_folder, exist_ok=True)
     all_files = glob.glob(os.path.join(data_folder, "*.csv"))
 
-    print("\n========== Scamalyzer Dataset Normalizer ==========\n")
+    print("\n========== URL Dataset Normalizer ==========\n")
     print(f"Input folder: {data_folder}")
     print(f"Output folder: {output_folder}\n")
-    print(f"Text column candidates: {TEXT_COLUMNS}")
-    print(f"Label column candidates: {LABEL_COLUMNS}\n")
 
     for file in all_files:
         print(f"\n--- Normalizing: {os.path.basename(file)} ---")
@@ -108,24 +100,24 @@ def normalize_datasets(data_folder, output_folder):
 
         print(f"  Columns found: {df.columns.tolist()}")
 
-        text_col = find_column(df.columns, TEXT_COLUMNS)
+        url_col = find_column(df.columns, URL_COLUMNS)
         label_col = find_column(df.columns, LABEL_COLUMNS)
 
-        if text_col is None or label_col is None:
+        if url_col is None or label_col is None:
             print("  [WARNING] Required columns not found. Skipping file.")
             continue
 
-        print(f"  Using text column: '{text_col}', label column: '{label_col}'")
+        print(f"  Using URL column: '{url_col}', label column: '{label_col}'")
         print(f"  Unique label values (raw): {df[label_col].unique()}")
 
-        df = df[[text_col, label_col]].copy()
+        df = df[[url_col, label_col]].copy()
         df.columns = ['message', 'label']
 
-        df['message'] = df['message'].apply(clean_text)
+        df['message'] = df['message'].apply(clean_url)
         df['label'] = df['label'].apply(normalize_label).astype('Int64')
 
         print(f"  Rows before dropna: {len(df)}")
-        df = filter_messages(df)
+        df = filter_urls(df)
         print(f"  Rows after filtering: {len(df)}")
         print(f"  Unique label values (normalized): {list(df['label'].dropna().unique())}")
 
@@ -134,8 +126,8 @@ def normalize_datasets(data_folder, output_folder):
 
     print("\n========== Normalization Complete ==========\n")
 
-def merge_and_deduplicate(output_folder, merged_filename="merged/merged.csv"):
-    print("\n========== Merging and Deduplicating ==========\n")
+def merge_and_deduplicate_urls(output_folder, merged_filename="merged/merged.csv"):
+    print("\n========== Merging and Deduplicating URLs ==========\n")
     csv_files = glob.glob(os.path.join(output_folder, "*.csv"))
     dfs = []
     for file in csv_files:
@@ -147,7 +139,7 @@ def merge_and_deduplicate(output_folder, merged_filename="merged/merged.csv"):
     before = len(merged_df)
     print(f"\n  Merged rows: {before}")
 
-    merged_df = filter_messages(merged_df)
+    merged_df = filter_urls(merged_df)
     merged_df = merged_df.drop_duplicates(subset=["message", "label"])
     after = len(merged_df)
     print(f"  Rows after deduplication and filtering: {after}")
@@ -156,11 +148,11 @@ def merge_and_deduplicate(output_folder, merged_filename="merged/merged.csv"):
     merged_df = merged_df.sample(frac=1, random_state=42).reset_index(drop=True)
 
     scam_count, non_scam_count, scam_pct, non_scam_pct = report_distribution(merged_df)
-    # Optionally, print a summary line
     print(f"\n  Final distribution: {scam_count} scam, {non_scam_count} non-scam")
     print(f"  Scam percentage: {scam_pct:.2f}%, Non-scam percentage: {non_scam_pct:.2f}%")
 
     merged_path = os.path.join(output_folder, merged_filename)
+    os.makedirs(os.path.dirname(merged_path), exist_ok=True)
     save_csv(merged_df, merged_path)
     print("========== Merge Complete ==========\n")
 
@@ -168,5 +160,5 @@ def merge_and_deduplicate(output_folder, merged_filename="merged/merged.csv"):
 # Run the script
 # -----------------------------
 if __name__ == "__main__":
-    normalize_datasets(DATA_FOLDER_MESSAGES, OUTPUT_FOLDER)
-    merge_and_deduplicate(OUTPUT_FOLDER)
+    normalize_url_datasets(DATA_FOLDER_URLS, OUTPUT_FOLDER)
+    merge_and_deduplicate_urls(OUTPUT_FOLDER)

@@ -2,9 +2,10 @@ import pandas as pd
 from presidio_analyzer import AnalyzerEngine
 from presidio_anonymizer import AnonymizerEngine
 from tqdm import tqdm
+from backend.utils.config import MERGED_PATH, OUTPUT_FOLDER
 
 print("Loading dataset...")
-df = pd.read_csv("")
+df = pd.read_csv(MERGED_PATH + "/merged_dataset.csv")
 
 if "message" in df.columns:
     print("Scrubbing 'message' column for PII...")
@@ -28,5 +29,5 @@ else:
     print("No 'message' column found. No text anonymization performed.")
 
 print("Saving anonymized dataset...")
-df.to_csv("anonymized_dataset.csv", index=False)
+df.to_csv(OUTPUT_FOLDER + "/anonymized_dataset.csv", index=False)
 print("Anonymization complete. Saved to anonymized_dataset.csv")
