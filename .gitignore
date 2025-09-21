@@ -245,3 +245,9 @@ out/
 
 # Config file
 backend/utils/config.py
+
+# Data files
+*.csv
+
+# Model files
+backend/models/

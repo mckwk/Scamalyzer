@@ -9,3 +9,11 @@ numpy
 sqlalchemy
 presidio-analyzer
 presidio-anonymizer
+matplotlib
+seaborn
+xgboost
+joblib
+tensorflow
+datasets
+tqdm
+model
