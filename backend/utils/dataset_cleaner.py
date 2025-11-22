@@ -4,7 +4,7 @@ import string
 
 import pandas as pd
 
-from backend.utils.config import DATA_FOLDER_MESSAGES, OUTPUT_FOLDER
+from utils.config import DATA_FOLDER_MESSAGES, OUTPUT_FOLDER
 
 # -----------------------------
 # Configuration

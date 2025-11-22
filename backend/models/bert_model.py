@@ -1,6 +1,6 @@
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 import torch
-from backend.utils.config import BERT_MODEL_PATH
+from utils.config import BERT_MODEL_PATH
 
 # Load BERT model and tokenizer
 tokenizer = AutoTokenizer.from_pretrained(BERT_MODEL_PATH)

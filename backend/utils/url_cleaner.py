@@ -3,7 +3,7 @@ import os
 
 import pandas as pd
 
-from backend.utils.config import DATA_FOLDER_URLS, OUTPUT_FOLDER
+from utils.config import DATA_FOLDER_URLS, OUTPUT_FOLDER
 
 # -----------------------------
 # Configuration

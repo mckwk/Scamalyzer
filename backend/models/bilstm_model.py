@@ -2,7 +2,7 @@ from keras.models import load_model
 from keras.preprocessing.sequence import pad_sequences
 from tensorflow.keras.preprocessing.text import tokenizer_from_json
 import json
-from backend.utils.config import BILSTM_MODEL_PATH, BILSTM_TOKENIZER_PATH
+from utils.config import BILSTM_MODEL_PATH, BILSTM_TOKENIZER_PATH
 
 # Load BiLSTM model and tokenizer
 MAX_LEN = 200

@@ -1,5 +1,5 @@
 import joblib
-from backend.utils.config import XGBOOST_MODEL_PATH, TFIDF_PATH
+from utils.config import XGBOOST_MODEL_PATH, TFIDF_PATH
 
 # Load XGBoost model and TF-IDF vectorizer
 model = joblib.load(XGBOOST_MODEL_PATH)
