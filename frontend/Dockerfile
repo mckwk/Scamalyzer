@@ -1,13 +1,20 @@
-FROM node:16 AS build
+# Use an official Node.js image
+FROM node:16
 
+# Set the working directory
 WORKDIR /app
-COPY package.json ./
-COPY package-lock.json ./
-RUN npm install
+
+# Copy the frontend code
 COPY . .
+
+# Install dependencies
+RUN npm install
+
+# Build the frontend
 RUN npm run build
 
-FROM nginx:alpine
-COPY --from=build /app/build /usr/share/nginx/html
+# Expose the frontend port
 EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+
+# Serve the frontend using a static server
+CMD ["npx", "serve", "-s", "build", "-l", "80"]

@@ -16,4 +16,4 @@ joblib
 tensorflow
 datasets
 tqdm
-model
+dotenv

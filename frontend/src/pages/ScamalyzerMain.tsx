@@ -93,29 +93,30 @@ const ScamalyzerMain: React.FC = () => {
     setLoading(true);
     setResult(null);
 
-    // Check if message matches any example
-    const found = QUIZ_EXAMPLES.find(ex => ex.text.trim() === message.trim());
-    if (found) {
-      setResult({
-        label: found.isScam ? 'scam' : 'safe',
-        confidence: found.confidence ?? 0.95,
-      });
-      setLoading(false);
-      return;
-    }
-
     try {
-      const res = await fetch('/analyze', {
+      const res = await fetch('http://localhost:5000/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message }),
       });
+
+      if (!res.ok) {
+        throw new Error('Failed to analyze the message.');
+      }
+
       const data = await res.json();
-      setResult(data);
-    } catch {
+      const bestResult = data.best || {};
+
+      const label = bestResult.label === 1 ? 'scam' : bestResult.label === 0 ? 'safe' : 'error';
+      const confidence = bestResult.confidence || 0;
+
+      setResult({ label, confidence });
+    } catch (error) {
+      console.error('Error analyzing the message:', error);
       setResult({ label: 'error', confidence: 0 });
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const getAdvice = (label: string) => {

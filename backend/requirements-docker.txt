@@ -1,0 +1,10 @@
+Flask
+Flask-Cors
+transformers
+torch
+tensorflow
+xgboost
+joblib
+pandas
+scikit-learn
+dotenv
