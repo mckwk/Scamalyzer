@@ -3,7 +3,7 @@ Flask-Cors
 Flask-RESTful
 transformers
 torch
-scikit-learn
+scikit-learn==1.7.1
 pandas
 numpy
 sqlalchemy
