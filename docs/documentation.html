@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scamalyzer Documentation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+        header {
+            background: #9b38c9;
+            color: #fff;
+            padding: 1rem 0;
+            text-align: center;
+        }
+        .container {
+            width: 80%;
+            margin: auto;
+            overflow: hidden;
+            padding: 2rem 0;
+        }
+        h1, h2, h3 {
+            color: #444;
+        }
+        pre {
+            background: #eee;
+            padding: 1rem;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        code {
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Scamalyzer Documentation</h1>
+    </header>
+    <div class="container">
+        <section>
+            <h2>Overview</h2>
+            <p>Scamalyzer is a project designed to detect and analyze scam messages using machine learning models. It consists of a backend API, a frontend user interface, and various utilities for data processing, model training, and evaluation.</p>
+        </section>
+
+        <section>
+            <h2>Backend</h2>
+            <h3>Structure</h3>
+            <p>The backend is implemented in Python and uses Flask for the API. It includes the following components:</p>
+            <ul>
+                <li><strong>API:</strong> Handles HTTP requests and routes. The main entry point is <code>api/routes.py</code>.</li>
+                <li><strong>Models:</strong> Contains machine learning models (BERT, BiLSTM, XGBoost) for scam detection. Each model has its own implementation.</li>
+                <li><strong>Utils:</strong> Utility scripts for preprocessing, anonymization, and configuration. Key files include <code>utils/preprocess.py</code> and <code>utils/anonymizer.py</code>.</li>
+                <li><strong>Training:</strong> Scripts for training and evaluating models. These include <code>train_bert.py</code>, <code>train_bilstm.py</code>, and <code>train_xboost.py</code>.</li>
+            </ul>
+
+            <h3>Dependencies</h3>
+            <p>The backend relies on the following Python libraries:</p>
+            <pre><code>Flask
+Flask-Cors
+Flask-RESTful
+transformers
+torch
+scikit-learn
+pandas
+numpy
+sqlalchemy
+presidio-analyzer
+presidio-anonymizer
+matplotlib
+seaborn
+xgboost
+joblib
+tensorflow
+datasets
+tqdm
+dotenv</code></pre>
+
+            <h3>Key files</h3>
+            <ul>
+                <li><code>app.py</code>: Main entry point for the backend.</li>
+                <li><code>api/routes.py</code>: Defines API endpoints.</li>
+                <li><code>models/</code>: Contains model implementations and pre-trained weights.</li>
+                <li><code>utils/</code>: Helper scripts for various tasks.</li>
+            </ul>
+
+            <h3>Example API usage</h3>
+            <p>To analyze a message, send a POST request to <code>/analyze</code> with the following JSON payload:</p>
+            <pre><code>{
+    "message": "Your message here"
+}</code></pre>
+            <p>The response will include predictions from all models:</p>
+            <pre><code>{
+    "bert": {
+        "label": "scam",
+        "confidence": 0.95
+    },
+    "bilstm": {
+        "label": "safe",
+        "confidence": 0.85
+    },
+    "xgboost": {
+        "label": "scam",
+        "confidence": 0.90
+    }
+}</code></pre>
+        </section>
+
+        <section>
+            <h2>Frontend</h2>
+            <h3>Structure</h3>
+            <p>The frontend is a React application that provides an interactive user interface. It includes:</p>
+            <ul>
+                <li><strong>Components:</strong> Reusable UI components such as <code>NavBar</code>, <code>Footer</code>, and <code>EducationTile</code>.</li>
+                <li><strong>Pages:</strong> Views for different sections of the application, such as the quiz and education pages.</li>
+                <li><strong>Styles:</strong> CSS files for styling the application.</li>
+            </ul>
+
+            <h3>Dependencies</h3>
+            <p>The frontend relies on the following libraries:</p>
+            <pre><code>React
+TypeScript
+react-router-dom</code></pre>
+
+            <h3>Key files</h3>
+            <ul>
+                <li><code>src/pages/ScamQuiz.tsx</code>: Implements the scam detection quiz.</li>
+                <li><code>src/pages/EducationPage.tsx</code>: Provides educational content.</li>
+                <li><code>src/components/</code>: Contains reusable components.</li>
+            </ul>
+
+            <h3>Example usage</h3>
+            <p>To take the scam detection quiz, navigate to the <strong>Scam Quiz</strong> page. The quiz presents five random examples and allows users to guess whether each message is a scam or safe. At the end, a score is displayed along with detailed feedback.</p>
+        </section>
+
+        <section>
+            <h2>Docker setup</h2>
+            <p>The project uses Docker for containerization. The <code>docker-compose.yml</code> file defines two services:</p>
+            <ul>
+                <li><strong>Backend:</strong> Runs the Flask API.</li>
+                <li><strong>Frontend:</strong> Serves the React application.</li>
+            </ul>
+
+            <h3>Commands</h3>
+            <p>To build and run the services, use the following commands:</p>
+            <pre><code>docker-compose build
+docker-compose up</code></pre>
+            <p>Access the frontend at <code>http://localhost:3000</code> and the backend at <code>http://localhost:5000</code>.</p>
+        </section>
+
+        <section>
+            <h2>How to run</h2>
+            <ol>
+                <li>Install Docker and Docker Compose.</li>
+                <li>Clone the repository:</li>
+                <pre><code>git clone https://github.com/mckwk/Scamalyzer.git</code></pre>
+                <li>Navigate to the project directory:</li>
+                <pre><code>cd Scamalyzer</code></pre>
+                <li>Run the services:</li>
+                <pre><code>docker-compose up</code></pre>
+                <li>Access the application in your browser.</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>Testing</h2>
+            <p>Unit tests are located in the <code>tests/</code> directory. To run the tests, use the following command:</p>
+            <pre><code>pytest</code></pre>
+        </section>
+    </div>
+</body>
+</html>
