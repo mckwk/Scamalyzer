@@ -284,3 +284,6 @@ yarn.lock
 
 # Models
 backend/models/output
+
+#Database
+backend/database/scamalyzer.db

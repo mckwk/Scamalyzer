@@ -17,3 +17,4 @@ tensorflow
 datasets
 tqdm
 dotenv
+SQLAlchemy
