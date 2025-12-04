@@ -1,4 +1,5 @@
 # train_bilstm.py
+from utils.config import FINAL_DATASET_PATH
 import json
 import os
 import sys
@@ -12,9 +13,7 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from tensorflow.keras.preprocessing.text import Tokenizer
 
-
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from utils.config import FINAL_DATASET_PATH
 
 SEED = 42
 MAX_LEN = 200

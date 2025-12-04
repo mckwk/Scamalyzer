@@ -9,6 +9,7 @@ from datasets import Dataset
 from sklearn.model_selection import train_test_split
 from transformers import (AutoModelForSequenceClassification, AutoTokenizer,
                           EarlyStoppingCallback, Trainer, TrainingArguments)
+
 from utils.config import FINAL_DATASET_PATH
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))

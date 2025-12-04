@@ -18,3 +18,4 @@ datasets
 tqdm
 dotenv
 SQLAlchemy
+transformers[torch]

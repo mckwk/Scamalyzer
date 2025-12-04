@@ -1,11 +1,13 @@
-import xgboost as xgb
-from utils.config import XGBOOST_MODEL_PATH, TFIDF_PATH
 import joblib
+import xgboost as xgb
+
+from utils.config import TFIDF_PATH, XGBOOST_MODEL_PATH
 
 # Load XGBoost model and TF-IDF vectorizer
 model = xgb.Booster()
 model.load_model(XGBOOST_MODEL_PATH)
 tfidf = joblib.load(TFIDF_PATH)
+
 
 def analyze_message(message):
     vectorized = tfidf.transform([message])

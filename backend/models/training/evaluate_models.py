@@ -16,6 +16,7 @@ from sklearn.metrics import (accuracy_score, confusion_matrix, f1_score,
                              precision_score, recall_score)
 from sklearn.model_selection import train_test_split
 from transformers import AutoModelForSequenceClassification, AutoTokenizer
+
 from utils.config import FINAL_DATASET_PATH
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))

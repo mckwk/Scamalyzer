@@ -6,8 +6,9 @@ import joblib
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.model_selection import train_test_split
-from utils.config import FINAL_DATASET_PATH
 from xgboost import XGBClassifier
+
+from utils.config import FINAL_DATASET_PATH
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 SEED = 42
