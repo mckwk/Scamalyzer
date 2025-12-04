@@ -173,6 +173,50 @@ docker-compose up</code></pre>
             <p>Unit tests are located in the <code>tests/</code> directory. To run the tests, use the following command:</p>
             <pre><code>pytest</code></pre>
         </section>
+
+        <section>
+            <h2>Database</h2>
+            <h3>Overview</h3>
+            <p>The Scamalyzer project uses an SQLite database to store messages and their analysis results. The database schema includes a <code>messages</code> table with fields for message content, labels, confidence scores, timestamps, and verification status.</p>
+
+            <h3>Schema</h3>
+            <p>The <code>messages</code> table includes the following fields:</p>
+            <ul>
+                <li><strong>id:</strong> Unique identifier for each message.</li>
+                <li><strong>content:</strong> The text content of the message.</li>
+                <li><strong>bert_label:</strong> Label assigned by the BERT model.</li>
+                <li><strong>bert_confidence:</strong> Confidence score from the BERT model.</li>
+                <li><strong>bilstm_label:</strong> Label assigned by the BiLSTM model.</li>
+                <li><strong>bilstm_confidence:</strong> Confidence score from the BiLSTM model.</li>
+                <li><strong>xgboost_label:</strong> Label assigned by the XGBoost model.</li>
+                <li><strong>xgboost_confidence:</strong> Confidence score from the XGBoost model.</li>
+                <li><strong>timestamp:</strong> The time the message was added to the database.</li>
+                <li><strong>verified:</strong> Indicates whether the message has been manually verified.</li>
+                <li><strong>used_for_training:</strong> Indicates whether the message has been used for model retraining.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Retraining</h2>
+            <h3>Overview</h3>
+            <p>The Scamalyzer project includes functionality to retrain its machine learning models (BERT, BiLSTM, and XGBoost) using newly verified messages. This ensures that the models remain up-to-date and improve over time.</p>
+
+            <h3>Process</h3>
+            <p>The retraining process involves the following steps:</p>
+            <ol>
+                <li>Fetch verified messages from the database that have not been used for training.</li>
+                <li>Retrain each model using the new data:</li>
+                <ul>
+                    <li><strong>BERT:</strong> Fine-tunes the pre-trained BERT model using the <code>transformers</code> library.</li>
+                    <li><strong>BiLSTM:</strong> Updates the BiLSTM model using TensorFlow.</li>
+                    <li><strong>XGBoost:</strong> Retrains the XGBoost model using the <code>xgboost</code> library.</li>
+                </ul>
+                <li>Mark the messages as used for training in the database.</li>
+            </ol>
+
+            <h3>Scripts</h3>
+            <p>The retraining functionality is implemented in the <code>retraining.py</code> script, which includes methods for fetching messages, retraining models, and updating the database.</p>
+        </section>
     </div>
 </body>
 </html>

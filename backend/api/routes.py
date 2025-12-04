@@ -1,10 +1,12 @@
 from flask import Blueprint, Flask, jsonify, request
+
+from backend.database.database import Message, SessionLocal
 from models.bert_model import analyze_message as analyze_bert
 from models.bilstm_model import analyze_message as analyze_bilstm
 from models.xgboost_model import analyze_message as analyze_xgboost
-from backend.database.database import SessionLocal, Message
 
 api_blueprint = Blueprint('api', __name__)
+
 
 def analyze_with_models(message):
     return {
@@ -13,9 +15,15 @@ def analyze_with_models(message):
         'XGBoost': analyze_xgboost(message),
     }
 
+
 def save_analysis_to_db(message, analysis_results):
     db = SessionLocal()
     try:
+        existing_message = db.query(Message).filter(
+            Message.content == message).first()
+        if existing_message:
+            return existing_message  # Return the existing message if it's a duplicate
+
         db_message = Message(
             content=message,
             bert_label=analysis_results['BERT'][0],
@@ -24,6 +32,8 @@ def save_analysis_to_db(message, analysis_results):
             bilstm_confidence=analysis_results['BiLSTM'][1],
             xgboost_label=analysis_results['XGBoost'][0],
             xgboost_confidence=analysis_results['XGBoost'][1],
+            verified=False,
+            used_for_training=False
         )
         db.add(db_message)
         db.commit()
@@ -31,6 +41,7 @@ def save_analysis_to_db(message, analysis_results):
         return db_message
     finally:
         db.close()
+
 
 def format_message(message):
     return {
@@ -43,6 +54,8 @@ def format_message(message):
         'xgboost_label': message.xgboost_label,
         'xgboost_confidence': message.xgboost_confidence,
         'timestamp': message.timestamp.isoformat(),
+        'verified': message.verified,
+        'used_for_training': message.used_for_training,
     }
 
 
@@ -63,11 +76,26 @@ def analyze():
     save_analysis_to_db(message, analysis_results)
     return jsonify({'results': results, 'best': best_result})
 
+
 @api_blueprint.route('/messages', methods=['GET'])
 def get_messages():
     db = SessionLocal()
     try:
         messages = db.query(Message).all()
         return jsonify([format_message(msg) for msg in messages])
+    finally:
+        db.close()
+
+
+@api_blueprint.route('/verify_message/<int:message_id>', methods=['POST'])
+def verify_message(message_id):
+    db = SessionLocal()
+    try:
+        message = db.query(Message).filter(Message.id == message_id).first()
+        if not message:
+            return jsonify({'error': 'Message not found'}), 404
+        message.verified = True
+        db.commit()
+        return jsonify({'message': 'Message verified successfully'})
     finally:
         db.close()
