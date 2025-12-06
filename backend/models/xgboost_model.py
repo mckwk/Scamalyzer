@@ -4,7 +4,8 @@ import xgboost as xgb
 from utils.config import TFIDF_PATH, XGBOOST_MODEL_PATH
 
 # Load XGBoost model and TF-IDF vectorizer
-model = joblib.load(XGBOOST_MODEL_PATH)
+model = xgb.Booster()
+model.load_model(XGBOOST_MODEL_PATH)
 tfidf = joblib.load(TFIDF_PATH)
 
 

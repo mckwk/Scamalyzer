@@ -17,21 +17,23 @@ from transformers import (AutoModelForSequenceClassification, AutoTokenizer,
                           Trainer, TrainingArguments)
 from xgboost import XGBClassifier
 
+from utils.config import BERT_MODEL_PATH, BILSTM_MODEL_PATH, BILSTM_TOKENIZER_PATH, XGBOOST_MODEL_PATH, TFIDF_PATH
+import os
+
+# Update paths to include absolute path prefix
+ABS_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+BERT_MODEL_PATH = os.path.join(ABS_PATH, BERT_MODEL_PATH)
+BILSTM_MODEL_PATH = os.path.join(ABS_PATH, BILSTM_MODEL_PATH)
+BILSTM_TOKENIZER_PATH = os.path.join(ABS_PATH, BILSTM_TOKENIZER_PATH)
+XGBOOST_MODEL_PATH = os.path.join(ABS_PATH, XGBOOST_MODEL_PATH)
+TFIDF_PATH = os.path.join(ABS_PATH, TFIDF_PATH)
+
 load_dotenv()
 
 DB_PATH = os.getenv(
     "DB_FILE", "D:/Repos/Scamalyzer/backend/database/scamalyzer.db")
 ABS_PATH = os.getenv("ABS_PATH", os.path.abspath(
     os.path.join(os.path.dirname(__file__), '..', '..')))
-BERT_MODEL_PATH = ABS_PATH + \
-    os.getenv("BERT_MODEL_PATH", "models/output/bert_finetuned")
-BILSTM_MODEL_PATH = ABS_PATH + \
-    os.getenv("BILSTM_MODEL_PATH", "models/output/bilstm_model.h5")
-BILSTM_TOKENIZER_PATH = ABS_PATH + \
-    os.getenv("BILSTM_TOKENIZER_PATH", "models/output/bilstm_tokenizer.json")
-XGBOOST_MODEL_PATH = ABS_PATH + \
-    os.getenv("XGBOOST_MODEL_PATH", "models/output/xgb_model.json")
-TFIDF_PATH = ABS_PATH + os.getenv("TFIDF_PATH", "models/output/tfidf.joblib")
 
 
 def connect_to_db():
@@ -108,9 +110,6 @@ def retrain_model(model_name, retrain_function, texts, labels):
 
 
 def retrain_bert(texts, labels):
-    if not os.path.exists(BERT_MODEL_PATH):
-        raise FileNotFoundError(
-            f"BERT model path '{BERT_MODEL_PATH}' does not exist.")
     tokenizer = AutoTokenizer.from_pretrained(BERT_MODEL_PATH)
     train_ds = prepare_dataset(texts, labels, tokenizer)
     model = AutoModelForSequenceClassification.from_pretrained(

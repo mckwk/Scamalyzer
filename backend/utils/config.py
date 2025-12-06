@@ -28,5 +28,5 @@ BILSTM_MODEL_PATH = os.getenv(
 BILSTM_TOKENIZER_PATH = os.getenv(
     "BILSTM_TOKENIZER_PATH", "models/output/bilstm_tokenizer.json")
 XGBOOST_MODEL_PATH = os.getenv(
-    "XGBOOST_MODEL_PATH", "models/output/xgb_model.joblib")
+    "XGBOOST_MODEL_PATH", "models/output/xgb_model.json")
 TFIDF_PATH = os.getenv("TFIDF_PATH", "models/output/tfidf.joblib")

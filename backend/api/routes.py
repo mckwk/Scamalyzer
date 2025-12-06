@@ -9,10 +9,18 @@ api_blueprint = Blueprint('api', __name__)
 
 
 def analyze_with_models(message):
+    bert_result = analyze_bert(message)
+    bilstm_result = analyze_bilstm(message)
+    xgboost_result = analyze_xgboost(message)
+
+    print("BERT Result:", bert_result)
+    print("BiLSTM Result:", bilstm_result)
+    print("XGBoost Result:", xgboost_result)
+
     return {
-        'BERT': analyze_bert(message),
-        'BiLSTM': analyze_bilstm(message),
-        'XGBoost': analyze_xgboost(message),
+        'BERT': bert_result,
+        'BiLSTM': bilstm_result,
+        'XGBoost': xgboost_result,
     }
 
 
