@@ -1,6 +1,6 @@
 from flask import Blueprint, Flask, jsonify, request
 
-from backend.database.database import Message, SessionLocal
+from database.database import Message, SessionLocal
 from models.bert_model import analyze_message as analyze_bert
 from models.bilstm_model import analyze_message as analyze_bilstm
 from models.xgboost_model import analyze_message as analyze_xgboost
