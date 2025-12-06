@@ -1,4 +1,4 @@
-from flask import Blueprint, Flask, jsonify, request
+from flask import Blueprint, jsonify, request
 
 from database.database import Message, SessionLocal
 from models.bert_model import analyze_message as analyze_bert
