@@ -1,1 +1,1 @@
-export const API_ENDPOINT = 'https://pulverable-kaydence-modular.ngrok-free.dev/';
+export const API_ENDPOINT = 'https://pulverable-kaydence-modular.ngrok-free.dev';
