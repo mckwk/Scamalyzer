@@ -5,6 +5,7 @@ import Header from '../components/Header';
 import FAQSection from '../components/FAQSection';
 import RecentAnalysesCarousel from '../components/RecentAnalysesCarousel';
 import { EXAMPLES as QUIZ_EXAMPLES } from '../constants/Examples';
+import { API_ENDPOINT } from '../constants/Config';
 
 type ResultType = {
   label: string;
@@ -94,7 +95,7 @@ const ScamalyzerMain: React.FC = () => {
     setResult(null);
 
     try {
-      const res = await fetch('http://localhost:5000/analyze', {
+      const res = await fetch(`${API_ENDPOINT}/analyze`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message }),
