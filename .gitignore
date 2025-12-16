@@ -287,3 +287,35 @@ backend/models/output
 
 #Database
 scamalyzer.db
+
+# Android Studio
+.idea/
+*.iml
+
+# Gradle
+.gradle/
+build/
+
+# Local configuration file (SDK path, etc.)
+local.properties
+
+# Android build artifacts
+*.apk
+*.ap_
+*.aab
+
+# Generated files
+captures/
+output.json
+
+# Keystore files (important for security, do not commit these!)
+*.jks
+*.keystore
+
+# Crashlytics and Firebase
+crashlytics-build.properties
+fabric.properties
+
+# Miscellaneous
+*.log
+*.hprof
