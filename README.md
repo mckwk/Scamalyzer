@@ -40,7 +40,7 @@ To make the Flask backend accessible over the internet, you can use ngrok. Follo
    ```bash
    ngrok http 5000
    ```
-4. Copy the public URL provided by ngrok (e.g., `https://<random-subdomain>.ngrok.io`) and use it to access the backend API from the internet.
+4. Copy the public URL provided by ngrok (e.g., `https://<random-subdomain>.ngrok.io`) and use it to access the backend API from the internet. Paste this URL into `API_ENDPOINT` in `frontend\src\constants\Config.ts` file.
 
 Note: Ensure that the `BACKEND_ADDRESS` in your `.env` file is set to `localhost` and the `BACKEND_PORT` is set to `5000` for this to work.
 

@@ -12,7 +12,7 @@ def analyze_with_models(message):
     bert_result = analyze_bert(message)
     bilstm_result = analyze_bilstm(message)
     xgboost_result = analyze_xgboost(message)
-
+    print("Analyzing message:", message)
     print("BERT Result:", bert_result)
     print("BiLSTM Result:", bilstm_result)
     print("XGBoost Result:", xgboost_result)
