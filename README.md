@@ -29,6 +29,21 @@ The Scamalyzer project is designed to analyze text messages (such as SMS and ema
    flask run
    ```
 
+
+### Exposing the Backend with ngrok
+
+To make the Flask backend accessible over the internet, you can use ngrok. Follow these steps:
+
+1. [Download ngrok](https://ngrok.com/download) and install it on your system.
+2. Start the Flask backend as described in the "Backend" section.
+3. Open a new terminal and run the following command to expose the Flask server:
+   ```bash
+   ngrok http 5000
+   ```
+4. Copy the public URL provided by ngrok (e.g., `https://<random-subdomain>.ngrok.io`) and use it to access the backend API from the internet.
+
+Note: Ensure that the `BACKEND_ADDRESS` in your `.env` file is set to `localhost` and the `BACKEND_PORT` is set to `5000` for this to work.
+
 ### Frontend
 
 1. Navigate to the `frontend` directory.
@@ -40,6 +55,7 @@ The Scamalyzer project is designed to analyze text messages (such as SMS and ema
    ```
    npm start
    ```
+
 
 ## Usage
 
