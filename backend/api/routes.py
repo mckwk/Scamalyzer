@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, after_this_request
 
 from database.database import Message, SessionLocal
 from models.bert_model import analyze_message as analyze_bert
@@ -107,3 +107,12 @@ def verify_message(message_id):
         return jsonify({'message': 'Message verified successfully'})
     finally:
         db.close()
+
+
+@api_blueprint.after_request
+def set_csp(response):
+    response.headers['Content-Security-Policy'] = "default-src 'self'; script-src 'self'; style-src 'self';"
+    response.headers['X-Frame-Options'] = 'DENY'
+    response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    return response
