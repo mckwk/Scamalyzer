@@ -111,8 +111,11 @@ def verify_message(message_id):
 
 @api_blueprint.after_request
 def set_csp(response):
-    response.headers['Content-Security-Policy'] = "default-src 'self'; script-src 'self'; style-src 'self';"
-    response.headers['X-Frame-Options'] = 'DENY'
+    response.headers['Content-Security-Policy'] = "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self';"
+    response.headers['X-Frame-Options'] = 'SAMEORIGIN'
     response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
     response.headers['X-Content-Type-Options'] = 'nosniff'
+    response.headers['Permissions-Policy'] = 'geolocation=(), microphone=(), camera=()'
+    response.headers['Access-Control-Allow-Origin'] = 'https://scamalyzer.vercel.app'
+    response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
     return response
