@@ -1,4 +1,6 @@
 from flask import Blueprint, jsonify, request, after_this_request
+import os
+from functools import wraps
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 
@@ -15,6 +17,19 @@ limiter = Limiter(
     default_limits=["200 per day", "50 per hour"],
     storage_uri="memory://"
 )
+
+
+def require_api_key(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        api_key = os.getenv("ADMIN_API_KEY")
+        if not api_key:
+            return jsonify({"error": "Server admin key not configured"}), 500
+        header_key = request.headers.get("X-API-KEY") or (request.headers.get("Authorization") or "").replace("Bearer ", "")
+        if header_key != api_key:
+            return jsonify({"error": "Unauthorized"}), 401
+        return f(*args, **kwargs)
+    return decorated
 
 
 def analyze_with_models(message):
@@ -97,6 +112,7 @@ def analyze():
 
 @api_blueprint.route('/messages', methods=['GET'])
 @limiter.limit("30 per minute")
+@require_api_key
 def get_messages():
     db = SessionLocal()
     try:
@@ -108,6 +124,7 @@ def get_messages():
 
 @api_blueprint.route('/verify_message/<int:message_id>', methods=['POST'])
 @limiter.limit("20 per minute")
+@require_api_key
 def verify_message(message_id):
     db = SessionLocal()
     try:
