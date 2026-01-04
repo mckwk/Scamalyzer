@@ -10,7 +10,9 @@ sys.path.append(dirname(abspath(__file__)))
 
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": [FRONTEND_URL, "*.vercel.app", "https://scamalyzer.vercel.app", "https://pulverable-kaydence-modular.ngrok-free.dev"]}})
+CORS(app, resources={r"/*": {"origins": [FRONTEND_URL, "*.vercel.app", "https://scamalyzer.vercel.app", "https://pulverable-kaydence-modular.ngrok-free.dev"]}},
+     supports_credentials=True,
+     allow_headers=["Content-Type", "Authorization", "X-Requested-With"])
 app.register_blueprint(api_blueprint, url_prefix='/')
 
 
