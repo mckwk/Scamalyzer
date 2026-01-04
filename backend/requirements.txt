@@ -1,6 +1,7 @@
 Flask
 Flask-Cors
 Flask-RESTful
+Flask-Limiter
 transformers
 torch
 scikit-learn==1.7.1

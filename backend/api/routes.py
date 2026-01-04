@@ -1,4 +1,6 @@
 from flask import Blueprint, jsonify, request, after_this_request
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 
 from database.database import Message, SessionLocal
 from models.bert_model import analyze_message as analyze_bert
@@ -6,6 +8,13 @@ from models.bilstm_model import analyze_message as analyze_bilstm
 from models.xgboost_model import analyze_message as analyze_xgboost
 
 api_blueprint = Blueprint('api', __name__)
+
+# Rate limiter setup - will be initialized with the app in app.py
+limiter = Limiter(
+    key_func=get_remote_address,
+    default_limits=["200 per day", "50 per hour"],
+    storage_uri="memory://"
+)
 
 
 def analyze_with_models(message):
@@ -68,6 +77,7 @@ def format_message(message):
 
 
 @api_blueprint.route('/analyze', methods=['POST'])
+@limiter.limit("10 per minute")
 def analyze():
     data = request.get_json()
     message = data.get('message', '')
@@ -86,6 +96,7 @@ def analyze():
 
 
 @api_blueprint.route('/messages', methods=['GET'])
+@limiter.limit("30 per minute")
 def get_messages():
     db = SessionLocal()
     try:
@@ -96,6 +107,7 @@ def get_messages():
 
 
 @api_blueprint.route('/verify_message/<int:message_id>', methods=['POST'])
+@limiter.limit("20 per minute")
 def verify_message(message_id):
     db = SessionLocal()
     try:
@@ -107,18 +119,3 @@ def verify_message(message_id):
         return jsonify({'message': 'Message verified successfully'})
     finally:
         db.close()
-
-
-@api_blueprint.after_request
-def set_security_headers(response):
-    response.headers['Content-Security-Policy'] = "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self';"
-    response.headers['X-Frame-Options'] = 'SAMEORIGIN'
-    response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
-    response.headers['X-Content-Type-Options'] = 'nosniff'
-    response.headers['Permissions-Policy'] = 'geolocation=(), microphone=(), camera=()'
-    response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
-    response.headers['Access-Control-Allow-Origin'] = 'https://scamalyzer.vercel.app'
-    response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization, X-Requested-With'
-    response.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS'
-    response.headers['Access-Control-Allow-Credentials'] = 'true'
-    return response
