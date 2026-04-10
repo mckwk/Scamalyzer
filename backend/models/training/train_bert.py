@@ -6,31 +6,70 @@ import numpy as np
 import pandas as pd
 import torch
 from datasets import Dataset
+from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
 from sklearn.model_selection import train_test_split
 from transformers import (AutoModelForSequenceClassification, AutoTokenizer,
                           EarlyStoppingCallback, Trainer, TrainingArguments)
 
-from utils.config import FINAL_DATASET_PATH
+from utils.config import (BERT_MODEL_PATH, MULTILINGUAL_BERT_MODEL_NAME,
+                          MULTILINGUAL_DATASET_PATH, get_dataset_paths)
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 SEED = 42
-MODEL_NAME = "distilbert-base-uncased"
+MODEL_NAME = MULTILINGUAL_BERT_MODEL_NAME
 MAX_LEN = 256
 BATCH_SIZE = 16
 EPOCHS = 4
-OUTPUT_DIR = "./models/bert_finetuned"
+OUTPUT_DIR = BERT_MODEL_PATH
 
-# Load dataset
-df = pd.read_csv(FINAL_DATASET_PATH)
+
+def load_multilingual_dataset():
+    if os.path.exists(MULTILINGUAL_DATASET_PATH):
+        df = pd.read_csv(MULTILINGUAL_DATASET_PATH)
+        if "language" not in df.columns:
+            df["language"] = "en"
+        return df
+
+    frames = []
+    for language, dataset_path in get_dataset_paths().items():
+        if not os.path.exists(dataset_path):
+            continue
+        data = pd.read_csv(dataset_path)
+        data["language"] = language
+        frames.append(data)
+
+    if not frames:
+        raise FileNotFoundError("No multilingual dataset files were found.")
+
+    merged = pd.concat(frames, ignore_index=True)
+    os.makedirs(os.path.dirname(MULTILINGUAL_DATASET_PATH), exist_ok=True)
+    merged.to_csv(MULTILINGUAL_DATASET_PATH, index=False)
+    return merged
+
+
+def compute_metrics(eval_pred):
+    logits, labels = eval_pred
+    predictions = np.argmax(logits, axis=-1)
+    return {
+        "accuracy": accuracy_score(labels, predictions),
+        "precision": precision_score(labels, predictions, zero_division=0),
+        "recall": recall_score(labels, predictions, zero_division=0),
+        "f1": f1_score(labels, predictions, zero_division=0),
+    }
+
+
+df = load_multilingual_dataset()
 df = df.dropna(subset=["message", "label"])
 df["label"] = df["label"].astype(int)
+df["language"] = df["language"].fillna("en").astype(str)
+df["stratify_key"] = df["label"].astype(str) + "_" + df["language"]
 
 # Split data
 train_df, test_df = train_test_split(
-    df, test_size=0.2, stratify=df["label"], random_state=SEED)
+    df, test_size=0.2, stratify=df["stratify_key"], random_state=SEED)
 train_df, val_df = train_test_split(
-    train_df, test_size=0.125, stratify=train_df["label"], random_state=SEED)
+    train_df, test_size=0.125, stratify=train_df["stratify_key"], random_state=SEED)
 
 # Tokenization
 tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
@@ -74,6 +113,7 @@ trainer = Trainer(
     eval_dataset=val_ds,
     tokenizer=tokenizer,
     compute_metrics=compute_metrics,
+    callbacks=[EarlyStoppingCallback(early_stopping_patience=2)],
 )
 
 trainer.train()
