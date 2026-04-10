@@ -10,6 +10,7 @@ import { API_ENDPOINT } from '../constants/Config';
 type ResultType = {
   label: string;
   confidence: number;
+  language?: string;
 };
 
 function getRandomExamples(): string[] {
@@ -110,8 +111,9 @@ const ScamalyzerMain: React.FC = () => {
 
       const label = bestResult.label === 1 ? 'scam' : bestResult.label === 0 ? 'safe' : 'error';
       const confidence = bestResult.confidence || 0;
+      const language = data.language || 'unknown';
 
-      setResult({ label, confidence });
+      setResult({ label, confidence, language });
     } catch (error) {
       console.error('Error analyzing the message:', error);
       setResult({ label: 'error', confidence: 0 });
@@ -222,6 +224,9 @@ const ScamalyzerMain: React.FC = () => {
                 className="animated-progress"
               />
               {(animatedConfidence * 100).toFixed(1)}%
+            </div>
+            <div className="result-language">
+              Detected language: <b>{result.language?.toUpperCase() || 'UNKNOWN'}</b>
             </div>
             {getAdvice(result.label)}
             <div className="result-disclaimer">
