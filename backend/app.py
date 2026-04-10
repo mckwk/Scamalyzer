@@ -11,9 +11,24 @@ sys.path.append(dirname(abspath(__file__)))
 
 app = Flask(__name__)
 limiter.init_app(app)
-CORS(app, resources={r"/*": {"origins": [FRONTEND_URL, "*.vercel.app", "https://scamalyzer.vercel.app", "https://pulverable-kaydence-modular.ngrok-free.dev"]}},
-     supports_credentials=True,
-     allow_headers=["Content-Type", "Authorization", "X-Requested-With"])
+CORS(
+    app,
+    resources={
+        r"/*": {
+            "origins": [
+                FRONTEND_URL,
+                "http://localhost:3000",
+                "http://127.0.0.1:3000",
+                r"https://.*\.vercel\.app",
+                "https://scamalyzer.vercel.app",
+                "https://pulverable-kaydence-modular.ngrok-free.dev",
+            ]
+        }
+    },
+    supports_credentials=True,
+    allow_headers=["Content-Type", "Authorization", "X-Requested-With"],
+    methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+)
 app.register_blueprint(api_blueprint, url_prefix='/')
 
 
@@ -45,11 +60,6 @@ def set_security_headers(response):
     response.headers['Cross-Origin-Embedder-Policy'] = 'require-corp'
     response.headers['Cross-Origin-Opener-Policy'] = 'same-origin'
     response.headers['Cross-Origin-Resource-Policy'] = 'same-origin'
-    # CORS headers
-    response.headers['Access-Control-Allow-Origin'] = 'https://scamalyzer.vercel.app'
-    response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization, X-Requested-With'
-    response.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS'
-    response.headers['Access-Control-Allow-Credentials'] = 'true'
     return response
 
 
@@ -59,4 +69,4 @@ def read_root():
 
 
 if __name__ == "__main__":
-    app.run(host=BACKEND_ADDRESS, port=int(BACKEND_PORT), debug=True)
+    app.run(host=BACKEND_ADDRESS, port=int(BACKEND_PORT))
