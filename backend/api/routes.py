@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, request, after_this_request
+from flask import Blueprint, jsonify, request
 import os
 from functools import wraps
 from flask_limiter import Limiter
@@ -8,6 +8,7 @@ from database.database import Message, SessionLocal
 from models.bert_model import analyze_message as analyze_bert
 from models.bilstm_model import analyze_message as analyze_bilstm
 from models.xgboost_model import analyze_message as analyze_xgboost
+from utils.language import detect_message_language
 
 api_blueprint = Blueprint('api', __name__)
 
@@ -32,11 +33,12 @@ def require_api_key(f):
     return decorated
 
 
-def analyze_with_models(message):
-    bert_result = analyze_bert(message)
-    bilstm_result = analyze_bilstm(message)
-    xgboost_result = analyze_xgboost(message)
+def analyze_with_models(message, language):
+    bert_result = analyze_bert(message, language)
+    bilstm_result = analyze_bilstm(message, language)
+    xgboost_result = analyze_xgboost(message, language)
     print("Analyzing message:", message)
+    print("Language:", language)
     print("BERT Result:", bert_result)
     print("BiLSTM Result:", bilstm_result)
     print("XGBoost Result:", xgboost_result)
@@ -48,16 +50,18 @@ def analyze_with_models(message):
     }
 
 
-def save_analysis_to_db(message, analysis_results):
+def save_analysis_to_db(message, analysis_results, language):
     db = SessionLocal()
     try:
         existing_message = db.query(Message).filter(
-            Message.content == message).first()
+            Message.content == message,
+            Message.language == language).first()
         if existing_message:
             return existing_message  # Return the existing message if it's a duplicate
 
         db_message = Message(
             content=message,
+            language=language,
             bert_label=analysis_results['BERT'][0],
             bert_confidence=analysis_results['BERT'][1],
             bilstm_label=analysis_results['BiLSTM'][0],
@@ -79,6 +83,7 @@ def format_message(message):
     return {
         'id': message.id,
         'content': message.content,
+        'language': message.language,
         'bert_label': message.bert_label,
         'bert_confidence': message.bert_confidence,
         'bilstm_label': message.bilstm_label,
@@ -94,20 +99,22 @@ def format_message(message):
 @api_blueprint.route('/analyze', methods=['POST'])
 @limiter.limit("10 per minute")
 def analyze():
-    data = request.get_json()
+    data = request.get_json(silent=True) or {}
     message = data.get('message', '')
+    requested_language = data.get('language')
 
     if not message:
         return jsonify({'error': 'No message provided'}), 400
 
-    analysis_results = analyze_with_models(message)
+    language = detect_message_language(message, requested_language=requested_language)
+    analysis_results = analyze_with_models(message, language)
     results = [
         {'model': model, 'label': result[0], 'confidence': result[1]}
         for model, result in analysis_results.items()
     ]
     best_result = max(results, key=lambda x: x['confidence'])
-    save_analysis_to_db(message, analysis_results)
-    return jsonify({'results': results, 'best': best_result})
+    save_analysis_to_db(message, analysis_results, language)
+    return jsonify({'language': language, 'results': results, 'best': best_result})
 
 
 @api_blueprint.route('/messages', methods=['GET'])
