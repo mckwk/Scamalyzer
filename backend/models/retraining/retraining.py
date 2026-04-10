@@ -9,31 +9,25 @@ import pandas as pd
 import tensorflow as tf
 from datasets import Dataset
 from dotenv import load_dotenv
-from sklearn.feature_extraction.text import TfidfVectorizer
-from tensorflow.keras.models import load_model
-from tensorflow.keras.preprocessing.sequence import pad_sequences
-from tensorflow.keras.preprocessing.text import tokenizer_from_json
+from keras.models import load_model
 from transformers import (AutoModelForSequenceClassification, AutoTokenizer,
                           Trainer, TrainingArguments)
-from xgboost import XGBClassifier
 
-from utils.config import BERT_MODEL_PATH, BILSTM_MODEL_PATH, BILSTM_TOKENIZER_PATH, XGBOOST_MODEL_PATH, TFIDF_PATH
-import os
-
-# Update paths to include absolute path prefix
-ABS_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
-BERT_MODEL_PATH = os.path.join(ABS_PATH, BERT_MODEL_PATH)
-BILSTM_MODEL_PATH = os.path.join(ABS_PATH, BILSTM_MODEL_PATH)
-BILSTM_TOKENIZER_PATH = os.path.join(ABS_PATH, BILSTM_TOKENIZER_PATH)
-XGBOOST_MODEL_PATH = os.path.join(ABS_PATH, XGBOOST_MODEL_PATH)
-TFIDF_PATH = os.path.join(ABS_PATH, TFIDF_PATH)
+from utils.config import (BERT_MODEL_PATH, BILSTM_MODEL_PATH,
+                          BILSTM_TOKENIZER_PATH, DEFAULT_LANGUAGE,
+                          TFIDF_PATH, XGBOOST_MODEL_PATH, get_language_paths,
+                          normalize_language)
 
 load_dotenv()
 
-DB_PATH = os.getenv(
-    "DB_FILE", "D:/Repos/Scamalyzer/backend/database/scamalyzer.db")
-ABS_PATH = os.getenv("ABS_PATH", os.path.abspath(
-    os.path.join(os.path.dirname(__file__), '..', '..')))
+BACKEND_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+DB_PATH = os.getenv("DB_FILE", os.path.join(BACKEND_ROOT, "database", "scamalyzer.db"))
+
+
+def resolve_path(path):
+    if os.path.isabs(path):
+        return path
+    return os.path.join(BACKEND_ROOT, path)
 
 
 def connect_to_db():
@@ -47,97 +41,90 @@ def connect_to_db():
 def fetch_verified_messages():
     conn = connect_to_db()
     if not conn:
-        return [], [], []
+        return []
+
     try:
+        conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         cursor.execute("""
-            SELECT id, content, 
-                   bert_label, bert_confidence, 
-                   bilstm_label, bilstm_confidence, 
+            SELECT id, content, language,
+                   bert_label, bert_confidence,
+                   bilstm_label, bilstm_confidence,
                    xgboost_label, xgboost_confidence
             FROM messages
             WHERE verified = 1 AND used_for_training = 0;
         """)
         rows = cursor.fetchall()
-        conn.close()
         print(f"Fetched {len(rows)} verified messages for retraining.")
         return process_message_rows(rows)
     except sqlite3.Error as e:
         print(f"Error accessing the database: {e}")
-        return [], [], []
+        return []
+    finally:
+        conn.close()
 
 
 def process_message_rows(rows):
-    message_ids = [row[0] for row in rows]
-    texts = [row[1] for row in rows]
-    labels = [get_highest_confidence_label(row) for row in rows]
-    return message_ids, texts, labels
+    processed = []
+    for row in rows:
+        processed.append({
+            "id": row["id"],
+            "text": row["content"],
+            "language": normalize_language(row["language"] or DEFAULT_LANGUAGE),
+            "label": get_highest_confidence_label(row),
+        })
+    return processed
 
 
 def get_highest_confidence_label(row):
     confidences = {
-        "bert": row[3],
-        "bilstm": row[5],
-        "xgboost": row[7]
+        "bert": row["bert_confidence"] if row["bert_confidence"] is not None else -1,
+        "bilstm": row["bilstm_confidence"] if row["bilstm_confidence"] is not None else -1,
+        "xgboost": row["xgboost_confidence"] if row["xgboost_confidence"] is not None else -1,
     }
     highest_model = max(confidences, key=confidences.get)
-    return int(row[2] if highest_model == "bert" else row[4] if highest_model == "bilstm" else row[6])
+
+    if highest_model == "bert":
+        return int(row["bert_label"])
+    if highest_model == "bilstm":
+        return int(row["bilstm_label"])
+    return int(row["xgboost_label"])
 
 
 def mark_messages_as_used(message_ids):
+    if not message_ids:
+        return
+
     conn = connect_to_db()
     if not conn:
         return
+
     try:
         cursor = conn.cursor()
-        cursor.executemany("""
-            UPDATE messages
-            SET used_for_training = 1
-            WHERE id = ?;
-        """, [(message_id,) for message_id in message_ids])
+        cursor.executemany(
+            "UPDATE messages SET used_for_training = 1 WHERE id = ?;",
+            [(message_id,) for message_id in message_ids],
+        )
         conn.commit()
-        conn.close()
     except sqlite3.Error as e:
         print(f"Error updating the database: {e}")
-
-
-def retrain_model(model_name, retrain_function, texts, labels):
-    if not texts:
-        print(f"No new verified messages for {model_name} retraining.")
-        return
-    retrain_function(texts, labels)
-    print(f"{model_name} model retrained successfully.")
-
-
-def retrain_bert(texts, labels):
-    tokenizer = AutoTokenizer.from_pretrained(BERT_MODEL_PATH)
-    train_ds = prepare_dataset(texts, labels, tokenizer)
-    model = AutoModelForSequenceClassification.from_pretrained(
-        BERT_MODEL_PATH, num_labels=2)
-    args = TrainingArguments(
-        output_dir=BERT_MODEL_PATH,
-        learning_rate=2e-5,
-        per_device_train_batch_size=16,
-        num_train_epochs=2,
-        weight_decay=0.01,
-        save_total_limit=2,
-    )
-    trainer = Trainer(model=model, args=args,
-                      train_dataset=train_ds, tokenizer=tokenizer)
-    trainer.train()
-    save_model_and_tokenizer(trainer, tokenizer, BERT_MODEL_PATH)
+    finally:
+        conn.close()
 
 
 def prepare_dataset(texts, labels, tokenizer):
     new_data = pd.DataFrame({"message": texts, "label": labels})
-    train_ds = Dataset.from_pandas(new_data).map(lambda batch: tokenizer(
-        batch["message"], truncation=True, padding="max_length", max_length=256), batched=True)
-    train_ds.set_format(type="torch", columns=[
-                        "input_ids", "attention_mask", "label"])
+    train_ds = Dataset.from_pandas(new_data).map(
+        lambda batch: tokenizer(
+            batch["message"], truncation=True, padding="max_length", max_length=256),
+        batched=True,
+    )
+    train_ds.set_format(type="torch", columns=["input_ids", "attention_mask", "label"])
     return train_ds
 
 
 def save_model_and_tokenizer(trainer, tokenizer, model_path):
+    model_path = resolve_path(model_path)
     with tempfile.TemporaryDirectory() as temp_dir:
         trainer.save_model(temp_dir)
         tokenizer.save_pretrained(temp_dir)
@@ -146,45 +133,60 @@ def save_model_and_tokenizer(trainer, tokenizer, model_path):
         shutil.move(temp_dir, model_path)
 
 
-def retrain_bilstm(texts, labels):
-    tf.config.run_functions_eagerly(True)
-    tokenizer = load_bilstm_tokenizer()
-    X_new_train = prepare_bilstm_texts(texts, tokenizer)
-    y_new_train = np.array(labels)
-    model = load_model(BILSTM_MODEL_PATH)
-    model.compile(loss="binary_crossentropy",
-                  optimizer="adam", metrics=["accuracy"])
-    model.fit(X_new_train, y_new_train, batch_size=64, epochs=2)
-    model.save(BILSTM_MODEL_PATH)
+def retrain_bert(entries):
+    if not entries:
+        return
+
+    texts = [entry["text"] for entry in entries]
+    labels = [entry["label"] for entry in entries]
+
+    model_path = resolve_path(BERT_MODEL_PATH)
+    tokenizer = AutoTokenizer.from_pretrained(model_path)
+    train_ds = prepare_dataset(texts, labels, tokenizer)
+    model = AutoModelForSequenceClassification.from_pretrained(model_path, num_labels=2)
+
+    args = TrainingArguments(
+        output_dir=model_path,
+        learning_rate=2e-5,
+        per_device_train_batch_size=16,
+        num_train_epochs=2,
+        weight_decay=0.01,
+        save_total_limit=2,
+    )
+
+    trainer = Trainer(model=model, args=args, train_dataset=train_ds, tokenizer=tokenizer)
+    trainer.train()
+    save_model_and_tokenizer(trainer, tokenizer, BERT_MODEL_PATH)
 
 
-def load_bilstm_tokenizer():
-    with open(BILSTM_TOKENIZER_PATH, "r") as f:
-        tokenizer_json = f.read()
-    return tokenizer_from_json(tokenizer_json)
+def retrain_bilstm(language, entries):
+    if not entries:
+        return
 
+    paths = get_language_paths(language)
+    model_path = resolve_path(paths["bilstm_model"])
+    tokenizer_path = resolve_path(paths["bilstm_tokenizer"])
 
-def prepare_bilstm_texts(texts, tokenizer):
+    # Legacy fallback for repositories that only have EN artifacts.
+    if not os.path.exists(model_path):
+        model_path = resolve_path(BILSTM_MODEL_PATH)
+    if not os.path.exists(tokenizer_path):
+        tokenizer_path = resolve_path(BILSTM_TOKENIZER_PATH)
+
+    with open(tokenizer_path, "r", encoding="utf-8") as f:
+        tokenizer = tf.keras.preprocessing.text.tokenizer_from_json(f.read())
+
+    texts = [entry["text"] for entry in entries]
+    labels = np.array([entry["label"] for entry in entries])
     seqs = tokenizer.texts_to_sequences(texts)
-    return pad_sequences(seqs, maxlen=200, padding="post", truncating="post")
+    X_new_train = tf.keras.preprocessing.sequence.pad_sequences(
+        seqs, maxlen=200, padding="post", truncating="post")
 
-
-def retrain_xgboost(texts, labels):
-    tfidf = joblib.load(TFIDF_PATH)
-    X_new_train, y_new_train = prepare_xgboost_data(texts, labels, tfidf)
-    model = joblib.load(XGBOOST_MODEL_PATH)
-    model.fit(X_new_train, y_new_train)
-    joblib.dump(model, XGBOOST_MODEL_PATH)
-    joblib.dump(tfidf, TFIDF_PATH)
-
-
-def prepare_xgboost_data(texts, labels, tfidf):
-    X_new_train = tfidf.transform(texts)
-    y_new_train = np.array(labels)
-    if len(np.unique(y_new_train)) < 2:
-        X_new_train, y_new_train = add_synthetic_data(
-            X_new_train, y_new_train, tfidf)
-    return X_new_train, y_new_train
+    tf.config.run_functions_eagerly(True)
+    model = load_model(model_path)
+    model.compile(loss="binary_crossentropy", optimizer="adam", metrics=["accuracy"])
+    model.fit(X_new_train, labels, batch_size=64, epochs=2)
+    model.save(model_path)
 
 
 def add_synthetic_data(X_new_train, y_new_train, tfidf):
@@ -199,13 +201,61 @@ def add_synthetic_data(X_new_train, y_new_train, tfidf):
     return X_new_train, y_new_train
 
 
+def retrain_xgboost(language, entries):
+    if not entries:
+        return
+
+    paths = get_language_paths(language)
+    model_path = resolve_path(paths["xgboost_model"])
+    tfidf_path = resolve_path(paths["tfidf"])
+
+    # Legacy fallback for repositories that only have EN artifacts.
+    if not os.path.exists(model_path):
+        model_path = resolve_path(XGBOOST_MODEL_PATH)
+    if not os.path.exists(tfidf_path):
+        tfidf_path = resolve_path(TFIDF_PATH)
+
+    tfidf = joblib.load(tfidf_path)
+    model = joblib.load(model_path)
+
+    texts = [entry["text"] for entry in entries]
+    labels = np.array([entry["label"] for entry in entries])
+    X_new_train = tfidf.transform(texts)
+
+    if len(np.unique(labels)) < 2:
+        X_new_train, labels = add_synthetic_data(X_new_train, labels, tfidf)
+
+    model.fit(X_new_train, labels)
+    joblib.dump(model, model_path)
+    joblib.dump(tfidf, tfidf_path)
+
+
+def group_entries_by_language(entries):
+    grouped = {}
+    for entry in entries:
+        language = normalize_language(entry["language"])
+        grouped.setdefault(language, []).append(entry)
+    return grouped
+
+
 def retrain_all_models():
-    message_ids, texts, labels = fetch_verified_messages()
-    retrain_model("BERT", retrain_bert, texts, labels)
-    retrain_model("BiLSTM", retrain_bilstm, texts, labels)
-    retrain_model("XGBoost", retrain_xgboost, texts, labels)
-    mark_messages_as_used(message_ids)
-    print("All models retrained successfully!")
+    entries = fetch_verified_messages()
+    if not entries:
+        print("No new verified messages available for retraining.")
+        return
+
+    retrain_bert(entries)
+    print("BERT model retrained successfully.")
+
+    by_language = group_entries_by_language(entries)
+    for language, lang_entries in by_language.items():
+        retrain_bilstm(language, lang_entries)
+        print(f"BiLSTM model retrained successfully for {language}.")
+        retrain_xgboost(language, lang_entries)
+        print(f"XGBoost model retrained successfully for {language}.")
+
+    mark_messages_as_used([entry["id"] for entry in entries])
+    print("All models retrained successfully.")
 
 
 if __name__ == "__main__":
