@@ -20,3 +20,4 @@ tqdm
 dotenv
 SQLAlchemy
 transformers[torch]
+langdetect

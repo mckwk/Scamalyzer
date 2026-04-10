@@ -210,6 +210,14 @@ __marimo__/
 # Node.js dependencies
 node_modules/
 
+# Scamalyzer trained model artifacts
+backend/models/output/
+backend/models/training/DistilBERT/
+backend/models/training/bilstm/
+backend/models/training/xgboost/
+backend/models/training/datasets/
+backend/models/training/evaluation_results/
+
 # Build output
 build/
 dist/
