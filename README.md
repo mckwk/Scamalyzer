@@ -29,17 +29,28 @@ The Scamalyzer project is designed to analyze text messages (such as SMS and ema
    flask run
    ```
 
-### Frontend
+### iOS App (Capacitor)
+
+To build and export the iOS app, you must use a macOS device with Xcode installed.
 
 1. Navigate to the `frontend` directory.
-2. Install the required npm packages:
+2. Install npm dependencies:
    ```
    npm install
    ```
-3. Start the frontend application:
+3. Build the web app assets:
    ```
-   npm start
+   npm run build
    ```
+4. Sync assets and native configuration to iOS:
+   ```
+   npx cap sync ios
+   ```
+5. Open the iOS project in Xcode:
+   ```
+   npx cap open ios
+   ```
+6. In Xcode, choose an iOS device/simulator and archive/export the app.
 
 ## Usage
 
