@@ -15,6 +15,12 @@
   padding-top: calc(env(safe-area-inset-top, 0px) + 0.4rem);
 }
 
+@supports (-webkit-touch-callout: none) {
+  .nav-bar-pro.nav-bar-transparent {
+    padding-top: max(calc(env(safe-area-inset-top, 0px) + 0.4rem), 2.2rem);
+  }
+}
+
 @supports (padding-top: constant(safe-area-inset-top)) {
   .nav-bar-pro.nav-bar-transparent {
     padding-top: calc(constant(safe-area-inset-top) + 0.4rem);
@@ -111,6 +117,11 @@
     left: 0;
     right: 0;
     padding-top: calc(env(safe-area-inset-top, 0px) + 0.5rem);
+  }
+  @supports (-webkit-touch-callout: none) {
+    .nav-bar-pro.nav-bar-transparent {
+      padding-top: max(calc(env(safe-area-inset-top, 0px) + 0.5rem), 2.8rem);
+    }
   }
   @supports (padding-top: constant(safe-area-inset-top)) {
     .nav-bar-pro.nav-bar-transparent {
