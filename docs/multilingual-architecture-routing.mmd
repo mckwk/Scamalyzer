@@ -1,0 +1,26 @@
+flowchart TD
+    F["Frontend (React / Capacitor)"]
+    B["Backend (Flask API)"]
+    L["Language Detection (EN / ES / DE)"]
+    R["Model Router"]
+    DB["Database / Storage"]
+    RT["Retraining Pipeline (per language)"]
+
+    subgraph MODELS["Model Layer"]
+        direction LR
+        M1["DistilBERT (per language)"]
+        M2["BiLSTM (per language)"]
+        M3["XGBoost (per language)"]
+    end
+
+    F --> B
+    B --> L
+    L --> R
+    R --> M1
+    R --> M2
+    R --> M3
+    B --> DB
+    DB --> RT
+    RT --> M1
+    RT --> M2
+    RT --> M3
