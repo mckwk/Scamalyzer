@@ -133,14 +133,39 @@ def save_model_and_tokenizer(trainer, tokenizer, model_path):
         shutil.move(temp_dir, model_path)
 
 
-def retrain_bert(entries):
+def resolve_model_path(language_path, legacy_path=None, is_directory=False, allow_legacy_fallback=False):
+    candidate = resolve_path(language_path)
+    if is_directory:
+        if os.path.isdir(candidate):
+            return candidate
+    elif os.path.exists(candidate):
+        return candidate
+
+    if allow_legacy_fallback and legacy_path:
+        legacy_candidate = resolve_path(legacy_path)
+        if is_directory:
+            if os.path.isdir(legacy_candidate):
+                return legacy_candidate
+        elif os.path.exists(legacy_candidate):
+            return legacy_candidate
+        raise FileNotFoundError(
+            f"Missing model artifact. Checked '{candidate}' and legacy fallback '{legacy_candidate}'."
+        )
+
+    raise FileNotFoundError(
+        f"Missing language-specific model artifact: '{candidate}'."
+    )
+
+
+def retrain_bert(language, entries):
     if not entries:
         return
 
     texts = [entry["text"] for entry in entries]
     labels = [entry["label"] for entry in entries]
 
-    model_path = resolve_path(BERT_MODEL_PATH)
+    paths = get_language_paths(language)
+    model_path = resolve_model_path(paths["bert_model"], BERT_MODEL_PATH, is_directory=True)
     tokenizer = AutoTokenizer.from_pretrained(model_path)
     train_ds = prepare_dataset(texts, labels, tokenizer)
     model = AutoModelForSequenceClassification.from_pretrained(model_path, num_labels=2)
@@ -156,7 +181,7 @@ def retrain_bert(entries):
 
     trainer = Trainer(model=model, args=args, train_dataset=train_ds, tokenizer=tokenizer)
     trainer.train()
-    save_model_and_tokenizer(trainer, tokenizer, BERT_MODEL_PATH)
+    save_model_and_tokenizer(trainer, tokenizer, model_path)
 
 
 def retrain_bilstm(language, entries):
@@ -164,14 +189,8 @@ def retrain_bilstm(language, entries):
         return
 
     paths = get_language_paths(language)
-    model_path = resolve_path(paths["bilstm_model"])
-    tokenizer_path = resolve_path(paths["bilstm_tokenizer"])
-
-    # Legacy fallback for repositories that only have EN artifacts.
-    if not os.path.exists(model_path):
-        model_path = resolve_path(BILSTM_MODEL_PATH)
-    if not os.path.exists(tokenizer_path):
-        tokenizer_path = resolve_path(BILSTM_TOKENIZER_PATH)
+    model_path = resolve_model_path(paths["bilstm_model"], BILSTM_MODEL_PATH)
+    tokenizer_path = resolve_model_path(paths["bilstm_tokenizer"], BILSTM_TOKENIZER_PATH)
 
     with open(tokenizer_path, "r", encoding="utf-8") as f:
         tokenizer = tf.keras.preprocessing.text.tokenizer_from_json(f.read())
@@ -206,14 +225,8 @@ def retrain_xgboost(language, entries):
         return
 
     paths = get_language_paths(language)
-    model_path = resolve_path(paths["xgboost_model"])
-    tfidf_path = resolve_path(paths["tfidf"])
-
-    # Legacy fallback for repositories that only have EN artifacts.
-    if not os.path.exists(model_path):
-        model_path = resolve_path(XGBOOST_MODEL_PATH)
-    if not os.path.exists(tfidf_path):
-        tfidf_path = resolve_path(TFIDF_PATH)
+    model_path = resolve_model_path(paths["xgboost_model"], XGBOOST_MODEL_PATH)
+    tfidf_path = resolve_model_path(paths["tfidf"], TFIDF_PATH)
 
     tfidf = joblib.load(tfidf_path)
     model = joblib.load(model_path)
@@ -244,11 +257,10 @@ def retrain_all_models():
         print("No new verified messages available for retraining.")
         return
 
-    retrain_bert(entries)
-    print("BERT model retrained successfully.")
-
     by_language = group_entries_by_language(entries)
     for language, lang_entries in by_language.items():
+        retrain_bert(language, lang_entries)
+        print(f"BERT model retrained successfully for {language}.")
         retrain_bilstm(language, lang_entries)
         print(f"BiLSTM model retrained successfully for {language}.")
         retrain_xgboost(language, lang_entries)

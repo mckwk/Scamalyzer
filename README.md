@@ -96,6 +96,9 @@ Retraining uses only messages that are:
 - marked as `verified = True`
 - not yet marked as `used_for_training = True`
 
+The retraining script groups verified entries by language and retrains BERT, BiLSTM, and XGBoost artifacts per language.
+If a language-specific artifact is missing, retraining fails fast rather than falling back to another language model.
+
 To retrain from the database, run:
 
 ```bash
